@@ -1,0 +1,21 @@
+# Secrets (ne jamais commiter)
+.env
+.env.local
+*.env
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db

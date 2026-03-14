@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BankScope - DashFlow</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="theme-bank">
+    <div class="dashboard-wrapper">
+        <nav class="dashboard-nav">
+            <div class="nav-content">
+                <a href="/" class="nav-logo">⚡ DashFlow</a>
+                <div class="nav-links">
+                    <a href="/" class="nav-link">Accueil</a>
+                    <a href="/dash1" class="nav-link">Photovoltaïque</a>
+                    <a href="/dash2" class="nav-link">Assurance</a>
+                    <a href="/bank" class="nav-link active">Bancaire</a>
+                    <a href="/pro" class="nav-link">Hospitalier</a>
+                    <a href="/a-propos" class="nav-link">À propos</a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="dashboard-container">
+            <iframe src="/bank/" frameborder="0" class="dashboard-iframe"></iframe>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

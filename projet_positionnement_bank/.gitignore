@@ -1,0 +1,10 @@
+# Fichiers temporaires Excel (créés à l'ouverture d'un .xlsx)
+~$*
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Secrets (ne jamais commiter)
+.env

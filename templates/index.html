@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DashFlow - Tableaux de Bord</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1 class="logo"><span class="logo-accent">⚡</span> DashFlow</h1>
+                <p class="subtitle">Tableaux de Bord Interactifs</p>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="dashboard-grid">
+                <!-- Dashboard 1: Photovoltaïque — orange / jaune clair, énergie -->
+                <div class="dashboard-card card-photo">
+                    <div class="card-icon">☀️</div>
+                    <h2>Production Photovoltaïque</h2>
+                    <p class="card-description">
+                        Suivez la production horaire et journalière des panneaux photovoltaïques.
+                        Analysez les performances énergétiques en temps réel.
+                    </p>
+                    <div class="card-features">
+                        <span class="feature-tag">Production Horaire</span>
+                        <span class="feature-tag">Production Journalière</span>
+                        <span class="feature-tag">Analyse Temporelle</span>
+                    </div>
+                    <a href="/dash1" class="btn-primary">Accéder au Dashboard</a>
+                </div>
+
+                <!-- Dashboard 2: Assurance — bleu -->
+                <div class="dashboard-card card-assurance">
+                    <div class="card-icon">🛡️</div>
+                    <h2>Gestion des Sinistres</h2>
+                    <p class="card-description">
+                        Suivez les sinistres et les caractéristiques des assurés.
+                        Analysez les tendances et optimisez votre gestion des risques.
+                    </p>
+                    <div class="card-features">
+                        <span class="feature-tag">Analyse des Sinistres</span>
+                        <span class="feature-tag">Caractéristiques Assurés</span>
+                        <span class="feature-tag">Statistiques Avancées</span>
+                    </div>
+                    <a href="/dash2" class="btn-primary">Accéder au Dashboard</a>
+                </div>
+
+                <!-- Dashboard 3: Bancaire — teal -->
+                <div class="dashboard-card card-bank">
+                    <div class="card-icon">🏦</div>
+                    <h2>Positionnement Bancaire</h2>
+                    <p class="card-description">
+                        Analyse du positionnement des banques au Sénégal. KPI sectoriels,
+                        comparaison interbancaire, rapports et indicateurs financiers.
+                    </p>
+                    <div class="card-features">
+                        <span class="feature-tag">Vue d'ensemble</span>
+                        <span class="feature-tag">Comparaison</span>
+                        <span class="feature-tag">Rapports</span>
+                    </div>
+                    <a href="/bank" class="btn-primary">Accéder au Dashboard</a>
+                </div>
+
+                <!-- Dashboard 4: Hospitalier — vert santé -->
+                <div class="dashboard-card card-pro">
+                    <div class="card-icon">🏥</div>
+                    <h2>Dashboard Hospitalier</h2>
+                    <p class="card-description">
+                        Analyse de la prise en charge des patients : qualité, durée de séjour, coûts.
+                        Départements, pathologies, traitements et gestion des risques.
+                    </p>
+                    <div class="card-features">
+                        <span class="feature-tag">KPI patients</span>
+                        <span class="feature-tag">Départements</span>
+                        <span class="feature-tag">Risques</span>
+                    </div>
+                    <a href="/pro" class="btn-primary">Accéder au Dashboard</a>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2024 DashFlow - Tous droits réservés</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

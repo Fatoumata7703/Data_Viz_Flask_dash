@@ -1,0 +1,379 @@
+/* ═══════════════════════════════════════════════════════════════
+   Dashboard Assurance — Thème Premium Bleu Profond
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  --ins-primary: #1a3a5c;
+  --ins-secondary: #2c5f8a;
+  --ins-accent: #c0392b;
+  --ins-gold: #d4a017;
+  --ins-success: #27ae60;
+  --ins-warn: #e74c3c;
+  --ins-light: #f0f4f8;
+  --ins-card: #ffffff;
+  --ins-border: #d5dce6;
+  --ins-text: #1e293b;
+  --ins-text-muted: #64748b;
+  --ins-cream: #f8fafc;
+  --ins-shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --ins-shadow-md: 0 4px 14px rgba(26,58,92,0.1);
+  --ins-shadow-lg: 0 8px 28px rgba(26,58,92,0.13);
+  --ins-radius: 14px;
+  --ins-radius-sm: 10px;
+}
+
+/* ─── Header ─── */
+.ins-navbar {
+  background: linear-gradient(135deg, #1a3a5c 0%, #0f2a45 50%, #2c5f8a 100%) !important;
+  border-radius: 0 0 var(--ins-radius) var(--ins-radius) !important;
+  box-shadow: 0 4px 20px rgba(26,58,92,0.3) !important;
+}
+
+/* Texte du header en blanc (titre + sous-titre) */
+.ins-navbar,
+.ins-navbar div {
+  color: #ffffff !important;
+}
+
+/* ─── Filter bar ─── */
+.ins-filter-bar {
+  background: var(--ins-card) !important;
+  border: 1px solid var(--ins-border) !important;
+  border-radius: var(--ins-radius) !important;
+  box-shadow: var(--ins-shadow-md) !important;
+  overflow: visible;
+  position: relative;
+  z-index: 100;
+  min-height: 72px !important;
+}
+.ins-filter-body {
+  padding: 14px 20px !important;
+  display: flex !important;
+  align-items: stretch !important;
+}
+.ins-filter-body > .row {
+  width: 100%;
+}
+.ins-filter-col {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-end !important;
+  min-width: 0;
+}
+.ins-filter-col-label {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+}
+.ins-filter-label {
+  font-weight: 600 !important;
+  font-size: 0.75rem !important;
+  color: var(--ins-text-muted) !important;
+  margin-bottom: 4px !important;
+}
+
+/* ─── Dropdowns premium ─── */
+.ins-dropdown .Select-control,
+.ins-dropdown > div {
+  border-radius: 8px !important;
+  border: 1.5px solid var(--ins-border) !important;
+  font-size: 0.82rem !important;
+  min-height: 36px !important;
+  background: var(--ins-card) !important;
+  transition: all 0.2s ease !important;
+}
+
+.ins-dropdown .Select-control:hover,
+.ins-dropdown > div:hover {
+  border-color: var(--ins-secondary) !important;
+}
+
+.ins-dropdown .is-focused .Select-control,
+.ins-dropdown .is-open > div {
+  border-color: var(--ins-primary) !important;
+  box-shadow: 0 0 0 3px rgba(26,58,92,0.1) !important;
+}
+
+.ins-dropdown .Select-value-label,
+.ins-dropdown .Select-placeholder {
+  font-size: 0.82rem !important;
+  color: var(--ins-text) !important;
+  font-weight: 500 !important;
+}
+
+.ins-dropdown .Select-placeholder {
+  color: var(--ins-text-muted) !important;
+}
+
+.ins-dropdown .Select-menu-outer,
+.ins-dropdown .VirtualizedSelectOption {
+  font-size: 0.82rem !important;
+}
+
+.ins-dropdown .Select-menu-outer {
+  border-radius: 8px !important;
+  border: 1.5px solid var(--ins-border) !important;
+  box-shadow: 0 8px 24px rgba(26,58,92,0.12) !important;
+  margin-top: 4px !important;
+  overflow: hidden;
+}
+
+.ins-dropdown .VirtualizedSelectOption,
+.ins-dropdown .Select-option {
+  padding: 8px 14px !important;
+  color: var(--ins-text) !important;
+  font-weight: 500 !important;
+  transition: all 0.15s ease !important;
+  border-bottom: 1px solid rgba(213,220,230,0.3);
+}
+
+.ins-dropdown .VirtualizedSelectOption:hover,
+.ins-dropdown .Select-option:hover,
+.ins-dropdown .Select-option.is-focused {
+  background: rgba(26,58,92,0.06) !important;
+  color: var(--ins-primary) !important;
+}
+
+.ins-dropdown .VirtualizedSelectOption.is-selected,
+.ins-dropdown .Select-option.is-selected {
+  background: var(--ins-primary) !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+}
+
+.ins-dropdown .Select-arrow-zone {
+  padding-right: 10px !important;
+}
+
+.ins-dropdown .Select-clear-zone {
+  display: none !important;
+}
+
+/* ─── KPI Cards — jolies blocs : blanc, bordure gauche épaisse arrondie, ombre ─── */
+.ins-kpi-card {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 16px !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(26, 58, 92, 0.08);
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.ins-kpi-card:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07), 0 2px 8px rgba(26, 58, 92, 0.12);
+  transform: translateY(-1px);
+}
+
+.ins-kpi-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #4b5563;
+  text-transform: uppercase;
+}
+
+.ins-kpi-value {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-top: 0.2rem;
+}
+
+/* ─── Content cards (graphiques statiques, pas d'animation au survol) ─── */
+.ins-content-card {
+  border: none !important;
+  border-radius: var(--ins-radius) !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04), 0 4px 16px rgba(26,58,92,0.07);
+  overflow: hidden;
+  background: var(--ins-card);
+}
+
+.ins-content-card:hover {
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04), 0 4px 16px rgba(26,58,92,0.07);
+}
+
+.ins-content-card .card-header,
+.ins-content-card .ins-card-title {
+  background: var(--ins-card) !important;
+  border-bottom: none !important;
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: var(--ins-text);
+  padding: 1rem 1.2rem 0.3rem 1.2rem;
+  letter-spacing: 0.01em;
+  position: relative;
+}
+
+.ins-card-title::after {
+  content: '';
+  display: block;
+  width: 36px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--ins-primary), var(--ins-secondary));
+  border-radius: 2px;
+  margin-top: 6px;
+}
+
+.ins-content-card .card-body {
+  padding: 0.6rem 1rem 1rem 1rem;
+  background: var(--ins-card);
+}
+
+.ins-content-card .js-plotly-plot .plotly .modebar {
+  display: none !important;
+}
+
+/* ─── Export buttons — visible sur le fond sombre de la navbar ─── */
+.ins-navbar .ins-btn-pdf {
+  background: rgba(255, 255, 255, 0.95) !important;
+  color: #1a3a5c !important;
+  border: 1px solid rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
+}
+.ins-navbar .ins-btn-pdf:hover {
+  background: #fff !important;
+  color: #0f2a45 !important;
+  border-color: #fff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
+}
+.ins-btn-pdf {
+  background: linear-gradient(135deg, #1a3a5c 0%, #2c5f8a 100%) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  font-size: 0.8rem !important;
+  padding: 0.4rem 1rem !important;
+  box-shadow: 0 2px 8px rgba(26,58,92,0.2) !important;
+  transition: all 0.2s ease !important;
+}
+.ins-btn-pdf-same-line {
+  min-height: 36px !important;
+  height: 36px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 1rem !important;
+  font-size: 0.82rem !important;
+}
+.ins-btn-pdf:hover {
+  background: linear-gradient(135deg, #0f2a45 0%, #1a3a5c 100%) !important;
+  color: #fff !important;
+  transform: translateY(-1px);
+}
+.ins-btn-excel {
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  font-size: 0.8rem !important;
+  padding: 0.4rem 1rem !important;
+  box-shadow: 0 2px 8px rgba(39,174,96,0.2) !important;
+  transition: all 0.2s ease !important;
+}
+.ins-btn-excel:hover {
+  background: linear-gradient(135deg, #1e8449 0%, #27ae60 100%) !important;
+  color: #fff !important;
+  transform: translateY(-1px);
+}
+
+/* ─── Sidebar ─── */
+.ins-sidebar-col {
+  position: sticky;
+  top: 1rem;
+}
+
+.ins-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--ins-card);
+  border: 1px solid var(--ins-border);
+  border-radius: var(--ins-radius);
+  padding: 0.6rem;
+  box-shadow: var(--ins-shadow-sm);
+}
+
+.ins-sidebar-btn,
+.ins-sidebar-btn.btn-link,
+.ins-sidebar-btn:link,
+.ins-sidebar-btn:visited,
+.ins-sidebar-btn:focus {
+  width: 100% !important;
+  text-align: left !important;
+  padding: 0.75rem 1rem !important;
+  font-weight: 600 !important;
+  font-size: 0.88rem !important;
+  border: none !important;
+  border-radius: var(--ins-radius-sm) !important;
+  background: transparent !important;
+  color: var(--ins-text-muted) !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  cursor: pointer !important;
+  border-left: 4px solid transparent !important;
+  text-decoration: none !important;
+  display: block !important;
+  outline: none !important;
+  box-shadow: none !important;
+  letter-spacing: 0.01em;
+}
+
+.ins-sidebar-btn:hover,
+.ins-sidebar-btn.btn-link:hover {
+  background: rgba(26,58,92,0.06) !important;
+  color: var(--ins-primary) !important;
+  border-left-color: var(--ins-secondary) !important;
+  transform: translateX(4px);
+  text-decoration: none !important;
+}
+
+.ins-sidebar-btn.ins-sidebar-btn-active,
+.ins-sidebar-btn.btn-link.ins-sidebar-btn-active,
+.ins-sidebar-btn.ins-sidebar-btn-active:focus,
+.ins-sidebar-btn.ins-sidebar-btn-active:hover {
+  background: linear-gradient(135deg, #1a3a5c 0%, #0f2a45 100%) !important;
+  color: #fff !important;
+  border-left-color: #fff !important;
+  box-shadow: 0 3px 12px rgba(26,58,92,0.3) !important;
+  text-decoration: none !important;
+  transform: none !important;
+}
+
+/* ─── Page animations ─── */
+@keyframes fadeInUp2 {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+#pages2-container > div {
+  animation: none;
+}
+
+#pages2-container .row > [class*="col-"] {
+  animation: none;
+}
+
+/* ─── DataTable ─── */
+.dash-table-container .dash-spreadsheet-container {
+  border-radius: 10px !important;
+  overflow: hidden;
+  box-shadow: var(--ins-shadow-sm);
+}
+.dash-table-container .previous-next-container button {
+  border-radius: 6px !important;
+  border: 1px solid var(--ins-border) !important;
+  background: var(--ins-card) !important;
+  color: var(--ins-text) !important;
+  font-weight: 600;
+  font-size: 0.8rem;
+  padding: 4px 12px;
+  transition: all 0.2s ease;
+}
+.dash-table-container .previous-next-container button:hover {
+  background: var(--ins-light) !important;
+  border-color: var(--ins-primary) !important;
+  color: var(--ins-primary) !important;
+}
+

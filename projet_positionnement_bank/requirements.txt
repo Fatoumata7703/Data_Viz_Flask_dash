@@ -1,0 +1,25 @@
+# Données et base
+pandas>=1.3.0
+openpyxl>=3.0.0
+pymongo>=4.0.0
+
+# Dashboard
+dash>=2.0.0
+plotly>=5.0.0
+dash-bootstrap-components>=1.3.0
+numpy>=1.20.0
+
+# Extraction PDF (obligatoire)
+pdfplumber>=0.9.0
+
+# Scraping BCEAO
+requests>=2.26.0
+beautifulsoup4>=4.10.0
+
+# Extraction PDF par OCR (optionnel, pour --ocr)
+# Décommenter pour utiliser: python -m scripts.extract_pdf_to_mongo --ocr
+# pytesseract>=0.3.10
+# pymupdf>=1.22.0
+# Pillow>=9.0.0
+# Alternative à pymupdf (nécessite poppler sur le système):
+# pdf2image>=1.16.0

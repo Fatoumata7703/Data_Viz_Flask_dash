@@ -1,0 +1,582 @@
+/* Variables CSS — tons doux (moins vifs) */
+:root {
+    --orange-light: #d4a574;
+    --orange-medium: #b87333;
+    --orange-dark: #8f5d24;
+    --white: #FFFFFF;
+    --white-off: #faf8f5;
+    --gray-light: #F5F5F5;
+    --gray-medium: #E0E0E0;
+    --gray-dark: #666666;
+    --text-dark: #333333;
+    --shadow: rgba(0, 0, 0, 0.1);
+    --shadow-hover: rgba(0, 0, 0, 0.15);
+}
+
+/* Reset et Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, var(--white-off) 0%, var(--white) 100%);
+    color: var(--text-dark);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+/* Container Principal */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header Accueil — bandeau cool & classe (slate premium) */
+.header {
+    background: linear-gradient(165deg, #1e293b 0%, #172033 40%, #0f172a 100%);
+    padding: 2.5rem 1.5rem;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(15, 23, 42, 0.45), 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+    margin-bottom: 2.5rem;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    position: relative;
+}
+
+.header-content {
+    color: #f8fafc;
+}
+
+.logo {
+    font-size: 2.25rem;
+    font-weight: 800;
+    margin-bottom: 0.35rem;
+    letter-spacing: 0.02em;
+}
+
+.logo .logo-accent {
+    color: #fb923c;
+    filter: drop-shadow(0 0 8px rgba(251, 146, 60, 0.25));
+}
+
+.subtitle {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #94a3b8;
+    letter-spacing: 0.03em;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    padding: 20px 0;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+/* Dashboard Cards */
+.dashboard-card {
+    background: var(--white);
+    border-radius: 15px;
+    padding: 35px;
+    box-shadow: 0 4px 15px var(--shadow);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    border: 2px solid transparent;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px var(--shadow-hover);
+}
+
+.card-icon {
+    font-size: 4em;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.dashboard-card h2 {
+    font-size: 1.8em;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+/* Carte Photovoltaïque — contour clair, couleur qui ressort au survol */
+.dashboard-card.card-photo { border: 2px solid rgba(249, 115, 22, 0.35); }
+.dashboard-card.card-photo:hover { border-color: #ea580c; box-shadow: 0 8px 25px rgba(234, 88, 12, 0.3); }
+.dashboard-card.card-photo h2 { color: #c2410c; }
+.dashboard-card.card-photo .card-description { color: #666666; }
+.dashboard-card.card-photo .feature-tag { background: rgba(234, 88, 12, 0.12); color: #ea580c; }
+.dashboard-card.card-photo .btn-primary { background: linear-gradient(135deg, #ea580c 0%, #f97316 50%, #fb923c 100%); color: #ffffff; }
+.dashboard-card.card-photo .btn-primary:hover { background: linear-gradient(135deg, #c2410c 0%, #ea580c 100%); color: #ffffff; }
+
+/* Carte Assurance — contour clair, couleur qui ressort au survol */
+.dashboard-card.card-assurance { border: 2px solid rgba(74, 111, 165, 0.4); }
+.dashboard-card.card-assurance:hover { border-color: #4a6fa5; box-shadow: 0 8px 25px rgba(74, 111, 165, 0.25); }
+.dashboard-card.card-assurance h2 { color: #2d4a6f; }
+.dashboard-card.card-assurance .feature-tag { background: #c5d4e8; color: #1e3a5f; }
+.dashboard-card.card-assurance .btn-primary { background: linear-gradient(135deg, #5a7ab0 0%, #2d4a6f 100%); }
+.dashboard-card.card-assurance .btn-primary:hover { background: linear-gradient(135deg, #2d4a6f 0%, #1e3a5f 100%); }
+
+/* Carte Bancaire — contour clair, couleur qui ressort au survol */
+.dashboard-card.card-bank { border: 2px solid rgba(45, 150, 176, 0.4); }
+.dashboard-card.card-bank:hover { border-color: #2D96B0; box-shadow: 0 8px 25px rgba(45, 150, 176, 0.25); }
+.dashboard-card.card-bank h2 { color: #1D394C; }
+.dashboard-card.card-bank .feature-tag { background: #b8dce8; color: #1D394C; }
+.dashboard-card.card-bank .btn-primary { background: linear-gradient(135deg, #2D96B0 0%, #1D394C 100%); }
+.dashboard-card.card-bank .btn-primary:hover { background: linear-gradient(135deg, #1D394C 0%, #152a38 100%); }
+
+/* Carte Hospitalier — contour clair, couleur qui ressort au survol */
+.dashboard-card.card-pro { border: 2px solid rgba(15, 118, 110, 0.4); }
+.dashboard-card.card-pro:hover { border-color: #0f766e; box-shadow: 0 8px 25px rgba(15, 118, 110, 0.25); }
+.dashboard-card.card-pro h2 { color: #0d5c56; }
+.dashboard-card.card-pro .feature-tag { background: #a7e0db; color: #0d5c56; }
+.dashboard-card.card-pro .btn-primary { background: linear-gradient(135deg, #0f766e 0%, #0d5c56 100%); }
+.dashboard-card.card-pro .btn-primary:hover { background: linear-gradient(135deg, #0d5c56 0%, #0a4540 100%); }
+
+.card-description {
+    color: var(--gray-dark);
+    margin-bottom: 20px;
+    text-align: center;
+    line-height: 1.8;
+}
+
+.card-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 25px;
+}
+
+.feature-tag {
+    background: var(--orange-light);
+    color: var(--white);
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 500;
+}
+
+/* Buttons (couleur par défaut; chaque carte surcharge via .card-xxx .btn-primary) */
+.btn-primary {
+    display: inline-block;
+    color: var(--white);
+    padding: 15px 35px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px var(--shadow);
+    margin-top: auto;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px var(--shadow-hover);
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    padding: 20px;
+    color: var(--gray-dark);
+    margin-top: auto;
+}
+
+/* Dashboard Wrapper (pour les pages dash1 et dash2) */
+.dashboard-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Navigation Dashboard */
+.dashboard-nav {
+    background: linear-gradient(135deg, var(--orange-light) 0%, var(--orange-medium) 100%);
+    padding: 15px 20px;
+    box-shadow: 0 2px 10px var(--shadow);
+    z-index: 1000;
+}
+
+.nav-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-logo {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: var(--white);
+    text-decoration: none;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.nav-links {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-link {
+    color: var(--white);
+    text-decoration: none;
+    padding: 8px 20px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.nav-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.nav-link.active {
+    background: var(--white);
+    color: var(--orange-dark);
+    font-weight: bold;
+}
+
+/* Thèmes de la navbar selon le dashboard */
+body.theme-photo .dashboard-nav {
+    background: linear-gradient(135deg, #ea580c 0%, #f97316 50%, #fb923c 100%);
+    box-shadow: 0 2px 10px rgba(234, 88, 12, 0.2);
+}
+body.theme-photo .nav-link.active {
+    color: #c2410c;
+}
+
+body.theme-assurance .dashboard-nav {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 50%, #3d5a80 100%);
+    box-shadow: 0 2px 10px rgba(30, 58, 95, 0.25);
+}
+body.theme-assurance .nav-link:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+body.theme-assurance .nav-link.active {
+    background: rgba(255, 255, 255, 0.95);
+    color: #1e3a5f;
+}
+
+body.theme-bank .dashboard-nav {
+    background: linear-gradient(135deg, #1D394C 0%, #2D4C6A 50%, #3395A3 100%);
+    box-shadow: 0 2px 10px rgba(29, 57, 76, 0.25);
+}
+body.theme-bank .nav-link:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+body.theme-bank .nav-link.active {
+    background: rgba(255, 255, 255, 0.95);
+    color: #1D394C;
+}
+
+body.theme-pro .dashboard-nav {
+    background: linear-gradient(135deg, #0d9488 0%, #0f766e 50%, #115e59 100%);
+    box-shadow: 0 2px 10px rgba(13, 148, 136, 0.25);
+}
+body.theme-pro .nav-link:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+body.theme-pro .nav-link.active {
+    background: rgba(255, 255, 255, 0.95);
+    color: #0f766e;
+}
+
+/* Thème À propos — gradient bleu/teal (cohérent avec la palette) */
+body.theme-about .dashboard-nav {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2d4c6a 45%, #0d9488 100%);
+    box-shadow: 0 2px 10px rgba(13, 148, 136, 0.2);
+}
+body.theme-about .nav-link:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+body.theme-about .nav-link.active {
+    background: rgba(255, 255, 255, 0.95);
+    color: #0f766e;
+}
+
+/* Page À propos — contenu scrollable, fond clair */
+.about-container {
+    flex: 1;
+    overflow: auto;
+    background: #f8fafc;
+    padding: 2rem 1.5rem;
+}
+
+.about-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.about-header h1 {
+    font-size: 1.85rem;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.about-intro {
+    color: #64748b;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+.about-section {
+    max-width: 1100px;
+    margin: 0 auto 2rem;
+}
+
+.about-section__title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.about-section__lead {
+    font-size: 0.95rem;
+    color: #64748b;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.about-section--footer {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+/* Grille des 4 cartes style KPI (vert, bleu, violet, orange) */
+.about-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.about-card {
+    background: var(--white);
+    border-radius: 14px;
+    padding: 1.5rem 1.5rem 1.5rem 1.75rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e2e8f0;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.about-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.about-card__accent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    border-radius: 4px 0 0 4px;
+}
+
+.about-card--green .about-card__accent { background: linear-gradient(180deg, #2dd4bf 0%, #14b8a6 100%); }
+.about-card--blue .about-card__accent { background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%); }
+.about-card--purple .about-card__accent { background: linear-gradient(180deg, #a78bfa 0%, #8b5cf6 100%); }
+.about-card--orange .about-card__accent { background: linear-gradient(180deg, #fb923c 0%, #f97316 100%); }
+
+.about-card__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.about-card__icon--green { background: rgba(20, 184, 166, 0.15); }
+.about-card__icon--blue { background: rgba(59, 130, 246, 0.15); }
+.about-card__icon--purple { background: rgba(139, 92, 246, 0.15); }
+.about-card__icon--orange { background: rgba(249, 115, 22, 0.15); }
+
+.about-card__title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #334155;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.25rem;
+}
+
+.about-card__subtitle {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin-bottom: 0.75rem;
+}
+
+.about-card__desc {
+    font-size: 0.9rem;
+    color: #475569;
+    line-height: 1.55;
+    margin-bottom: 0.75rem;
+}
+
+.about-card__features {
+    font-size: 0.82rem;
+    color: #475569;
+    line-height: 1.5;
+    margin: 0 0 0.75rem 1.1rem;
+    padding: 0;
+    list-style: disc;
+}
+
+.about-card__features li {
+    margin-bottom: 0.35rem;
+}
+
+.about-card__metrics {
+    font-size: 0.8rem;
+    color: #64748b;
+    line-height: 1.45;
+    margin-bottom: 1rem;
+    padding: 0.5rem 0;
+    border-top: 1px solid #f1f5f9;
+}
+
+.about-card__metrics strong {
+    color: #475569;
+}
+
+.about-card__link {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #0f766e;
+    text-decoration: none;
+}
+
+.about-card__link:hover {
+    text-decoration: underline;
+}
+
+.about-card--green .about-card__title { color: #0d9488; }
+.about-card--green .about-card__link { color: #0f766e; }
+.about-card--blue .about-card__title { color: #2563eb; }
+.about-card--blue .about-card__link { color: #1d4ed8; }
+.about-card--purple .about-card__title { color: #7c3aed; }
+.about-card--purple .about-card__link { color: #6d28d9; }
+.about-card--orange .about-card__title { color: #ea580c; }
+.about-card--orange .about-card__link { color: #c2410c; }
+
+/* Dashboard Container */
+.dashboard-container {
+    flex: 1;
+    overflow: hidden;
+    background: var(--gray-light);
+}
+
+.dashboard-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .logo {
+        font-size: 2em;
+    }
+    
+    .nav-content {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .dashboard-card {
+        padding: 25px;
+    }
+    
+    .about-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .about-container {
+        padding: 1.25rem 1rem;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dashboard-card {
+    animation: fadeIn 0.6s ease-out;
+}
+
+.dashboard-card:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+/* Scrollbar — style cool & classe (slate, cohérent avec le bandeau) */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+    border: 2px solid #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: #64748b;
+}

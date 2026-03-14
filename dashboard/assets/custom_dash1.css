@@ -1,0 +1,491 @@
+/* ═══════════════════════════════════════════════════════════════
+   Dashboard Photovoltaïque — Thème SOLAIRE Premium
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  --solar-orange: #b87333;
+  --solar-amber: #c99a5c;
+  --solar-yellow: #c9a227;
+  --solar-gold: #b8960f;
+  --solar-dark: #2d2d2d;
+  --solar-cream: #f8f5f0;
+  --solar-card: #ffffff;
+  --solar-border: #e0d8cc;
+  --solar-text: #3d3d3d;
+  --solar-text-muted: #8a7968;
+  --solar-success: #3d7a5c;
+  --solar-warn: #b85454;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 12px rgba(120, 80, 40, 0.08);
+  --shadow-lg: 0 8px 24px rgba(120, 80, 40, 0.1);
+  --radius: 14px;
+  --radius-sm: 10px;
+}
+
+/* ─── Global ─── */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+#pages-container > div {
+  animation: fadeInUp 0.35s ease-out;
+}
+
+/* ─── Header / Navbar — rouge-orange soleil en clair ─── */
+.navbar-dark {
+  background: linear-gradient(135deg, #ea580c 0%, #f97316 50%, #fb923c 100%) !important;
+  border-radius: 0 0 var(--radius) var(--radius) !important;
+  box-shadow: 0 4px 20px rgba(234, 88, 12, 0.2) !important;
+}
+
+/* ─── Barre de filtres ─── */
+.solar-filter-bar {
+  background: var(--solar-card) !important;
+  border: 1px solid var(--solar-border) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: var(--shadow-md) !important;
+  overflow: visible;
+  position: relative;
+  z-index: 100;
+}
+
+/* Boutons pilule période */
+.solar-pill-btn {
+  border-radius: 20px !important;
+  font-weight: 600 !important;
+  font-size: 0.78rem !important;
+  padding: 0.35rem 0.9rem !important;
+  border: 2px solid var(--solar-border) !important;
+  background: var(--solar-card) !important;
+  color: var(--solar-text-muted) !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.solar-pill-btn:hover {
+  border-color: var(--solar-orange) !important;
+  color: var(--solar-orange) !important;
+  background: #f5efe8 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(184, 115, 51, 0.12) !important;
+}
+
+.solar-pill-btn:active,
+.solar-pill-btn.active {
+  background: linear-gradient(135deg, #ea580c 0%, #f97316 100%) !important;
+  border-color: #ea580c !important;
+  color: #fff !important;
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.25) !important;
+}
+
+/* Bouton Appliquer — accord rouge-orange soleil */
+.solar-apply-btn {
+  font-weight: 700 !important;
+  font-size: 0.85rem !important;
+  padding: 0.55rem 1.2rem !important;
+  background: linear-gradient(135deg, #ea580c 0%, #f97316 100%) !important;
+  border: none !important;
+  border-radius: var(--radius-sm) !important;
+  color: #fff !important;
+  box-shadow: 0 3px 10px rgba(234, 88, 12, 0.2) !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  letter-spacing: 0.02em;
+}
+
+.solar-apply-btn:hover {
+  background: linear-gradient(135deg, #c2410c 0%, #ea580c 100%) !important;
+  color: #fff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(234, 88, 12, 0.3) !important;
+}
+
+/* Date picker — rectangle bords arrondis, compact */
+.SingleDatePickerInput,
+.SingleDatePickerInput__withBorder {
+  border-radius: 8px !important;
+  border: 1.5px solid var(--solar-border) !important;
+  background: var(--solar-card) !important;
+  overflow: hidden;
+  height: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+.SingleDatePickerInput .DateInput {
+  width: 95px !important;
+}
+.SingleDatePickerInput .DateInput_input {
+  font-weight: 600 !important;
+  font-size: 0.78rem !important;
+  color: var(--solar-text) !important;
+  padding: 0.2rem 0.5rem !important;
+  height: 28px !important;
+  line-height: 28px !important;
+  text-align: center;
+  border: none !important;
+  background: transparent !important;
+}
+.SingleDatePickerInput_calendarIcon {
+  display: none !important;
+}
+
+/* Dropdown premium */
+.solar-dropdown .Select-control,
+.solar-dropdown > div {
+  border-radius: 8px !important;
+  border: 1.5px solid var(--solar-border) !important;
+  min-height: 36px !important;
+  background: var(--solar-card) !important;
+  transition: all 0.2s ease !important;
+}
+.solar-dropdown .Select-control:hover,
+.solar-dropdown > div:hover {
+  border-color: var(--solar-orange) !important;
+}
+.solar-dropdown .is-focused .Select-control,
+.solar-dropdown .is-open > div {
+  border-color: var(--solar-orange) !important;
+  box-shadow: 0 0 0 3px rgba(184,115,51,0.1) !important;
+}
+.solar-dropdown .Select-value-label,
+.solar-dropdown .Select-placeholder {
+  font-size: 0.82rem !important;
+  font-weight: 500 !important;
+}
+.solar-dropdown .Select-menu-outer {
+  border-radius: 8px !important;
+  border: 1.5px solid var(--solar-border) !important;
+  box-shadow: 0 8px 24px rgba(184,115,51,0.08) !important;
+  margin-top: 4px !important;
+  overflow: hidden;
+}
+.solar-dropdown .VirtualizedSelectOption,
+.solar-dropdown .Select-option {
+  padding: 8px 14px !important;
+  font-size: 0.82rem !important;
+  font-weight: 500 !important;
+  transition: all 0.15s ease !important;
+  border-bottom: 1px solid rgba(232,220,200,0.3);
+}
+.solar-dropdown .VirtualizedSelectOption:hover,
+.solar-dropdown .Select-option:hover,
+.solar-dropdown .Select-option.is-focused {
+  background: rgba(184,115,51,0.08) !important;
+  color: var(--solar-orange) !important;
+}
+.solar-dropdown .Select-option.is-selected {
+  background: var(--solar-orange) !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+}
+
+/* ─── KPI Cards — jolies blocs : blanc, bordure gauche épaisse arrondie, ombre ─── */
+.solar-kpi-card {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 16px !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(184, 115, 51, 0.06);
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.solar-kpi-card:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07), 0 2px 8px rgba(184, 115, 51, 0.08);
+  transform: translateY(-1px);
+}
+
+.solar-kpi-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #4b5563;
+  text-transform: uppercase;
+}
+
+.solar-kpi-value {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-top: 0.2rem;
+  color: #92400e !important;  /* orange/brown unifié comme sur l’image */
+}
+
+/* ─── Cartes de contenu (graphiques) — comme dash2 : infobulles visibles, pas coupées ─── */
+.solar-content-card {
+  border: none !important;
+  border-radius: var(--radius) !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04), 0 4px 16px rgba(184,115,51,0.05);
+  overflow: visible;
+  background: var(--solar-card);
+}
+.solar-content-card .card-body {
+  overflow: visible;
+}
+.solar-content-card .js-plotly-plot,
+.solar-content-card .js-plotly-plot .plotly .main-svg {
+  overflow: visible !important;
+}
+
+.solar-content-card:hover {
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04), 0 4px 16px rgba(184,115,51,0.05);
+}
+
+.solar-content-card .card-header,
+.solar-content-card .solar-card-title {
+  background: var(--solar-card) !important;
+  border-bottom: none !important;
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: var(--solar-text);
+  padding: 1rem 1.2rem 0.3rem 1.2rem;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  position: relative;
+}
+
+.solar-card-title::after {
+  content: '';
+  display: block;
+  width: 36px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--solar-orange), var(--solar-amber));
+  border-radius: 2px;
+  margin-top: 6px;
+}
+
+.solar-content-card .card-body {
+  padding: 0.6rem 1rem 1rem 1rem;
+  background: var(--solar-card);
+  overflow: visible;
+}
+
+.solar-content-card .js-plotly-plot .plotly .modebar {
+  display: none !important;
+}
+
+.solar-content-card .js-plotly-plot {
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+
+/* Pages Performance & Environnement — graphiques et cartes totalement statiques (aucun mouvement) */
+#page-performance .solar-content-card,
+#page-performance .solar-content-card .card-body,
+#page-performance .js-plotly-plot,
+#page-performance #perf-efficiency-graph,
+#page-performance #perf-efficiency-histogram,
+#page-environment .solar-content-card,
+#page-environment .solar-content-card .card-body,
+#page-environment .js-plotly-plot,
+#page-environment #temp-vs-production-graph,
+#page-environment #env-ambient-vs-efficiency-graph,
+#page-environment #env-temp-bands-graph,
+#page-environment #heatmap-irradiation-production,
+#page-environment #env-irradiation-graph {
+  transition: none !important;
+  transform: none !important;
+  animation: none !important;
+}
+
+/* Conteneurs à hauteur fixe pour éviter tout décalage (Efficacité AC/DC + Distribution du rendement) */
+#page-performance .solar-graph-fixed-height {
+  overflow: hidden;
+}
+#page-performance .solar-graph-fixed-height .js-plotly-plot,
+#page-performance .solar-graph-fixed-height .plotly {
+  height: 100% !important;
+  min-height: 100% !important;
+}
+#page-performance #perf-efficiency-stats {
+  min-height: 44px;
+  flex-shrink: 0;
+}
+
+/* Page Environnement — mêmes conteneurs à hauteur fixe (Temp. module vs Production, Temp. ambiante vs Efficacité) */
+#page-environment .solar-graph-fixed-height {
+  overflow: hidden;
+}
+#page-environment .solar-graph-fixed-height .js-plotly-plot,
+#page-environment .solar-graph-fixed-height .plotly {
+  height: 100% !important;
+  min-height: 100% !important;
+}
+#page-environment #env-correlation-r,
+#page-environment #env-irradiation-corr {
+  min-height: 44px;
+  flex-shrink: 0;
+}
+
+/* Désactiver l'animation d'entrée des lignes sur Performance et Environnement (évite que tout "bouge" à l'ouverture de l'onglet) */
+#page-performance .row > [class*="col-"],
+#page-environment .row > [class*="col-"] {
+  animation: none !important;
+}
+
+/* Row animation cascade (autres pages uniquement) */
+.row > [class*="col-"] {
+  animation: fadeInUp 0.4s ease-out both;
+}
+.row > [class*="col-"]:nth-child(2) {
+  animation-delay: 0.08s;
+}
+.row > [class*="col-"]:nth-child(3) {
+  animation-delay: 0.16s;
+}
+.row > [class*="col-"]:nth-child(4) {
+  animation-delay: 0.24s;
+}
+
+/* DataTable premium */
+.dash-table-container .dash-spreadsheet-container {
+  border-radius: 10px !important;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.dash-table-container .previous-next-container {
+  padding: 8px 0;
+}
+.dash-table-container .previous-next-container button {
+  border-radius: 6px !important;
+  border: 1px solid var(--solar-border) !important;
+  background: var(--solar-card) !important;
+  color: var(--solar-text) !important;
+  font-weight: 600;
+  font-size: 0.8rem;
+  padding: 4px 12px;
+  transition: all 0.2s ease;
+}
+.dash-table-container .previous-next-container button:hover {
+  background: var(--solar-cream) !important;
+  border-color: var(--solar-amber) !important;
+  color: var(--solar-orange) !important;
+}
+
+/* ─── Boutons Export — PDF (même ligne, même taille que les dropdowns) ─── */
+.solar-btn-pdf {
+  background: linear-gradient(135deg, #ea580c 0%, #f97316 100%) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  font-size: 0.8rem !important;
+  padding: 0.4rem 1rem !important;
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.2) !important;
+  transition: all 0.2s ease !important;
+}
+.solar-btn-pdf-same-line {
+  min-height: 36px !important;
+  height: 36px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 1rem !important;
+  font-size: 0.82rem !important;
+}
+.solar-btn-pdf:hover {
+  background: linear-gradient(135deg, #c2410c 0%, #ea580c 100%) !important;
+  color: #fff !important;
+  transform: translateY(-1px);
+}
+.solar-btn-excel {
+  background: linear-gradient(135deg, #3d7a5c 0%, #4d8a6c 100%) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  font-size: 0.8rem !important;
+  padding: 0.4rem 1rem !important;
+  box-shadow: 0 2px 8px rgba(61, 122, 92, 0.15) !important;
+  transition: all 0.2s ease !important;
+}
+.solar-btn-excel:hover {
+  background: linear-gradient(135deg, #2d6a4c 0%, #3d7a5c 100%) !important;
+  color: #fff !important;
+  transform: translateY(-1px);
+}
+
+/* ─── Sidebar gauche ─── */
+.solar-sidebar-col {
+  position: sticky;
+  top: 1rem;
+}
+
+.solar-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--solar-card);
+  border: 1px solid var(--solar-border);
+  border-radius: var(--radius);
+  padding: 0.6rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.solar-sidebar-btn,
+.solar-sidebar-btn.btn-link,
+.solar-sidebar-btn:link,
+.solar-sidebar-btn:visited,
+.solar-sidebar-btn:focus {
+  width: 100% !important;
+  text-align: left !important;
+  padding: 0.6rem 0.9rem !important;
+  font-weight: 600 !important;
+  font-size: 0.82rem !important;
+  border: none !important;
+  border-radius: var(--radius-sm) !important;
+  background: transparent !important;
+  color: var(--solar-text-muted) !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  cursor: pointer !important;
+  border-left: 3px solid transparent !important;
+  text-decoration: none !important;
+  display: block !important;
+  outline: none !important;
+  box-shadow: none !important;
+  letter-spacing: 0.01em;
+}
+
+.solar-sidebar-btn:hover,
+.solar-sidebar-btn.btn-link:hover {
+  background: rgba(234, 88, 12, 0.1) !important;
+  color: #ea580c !important;
+  border-left-color: #f97316 !important;
+  text-decoration: none !important;
+}
+
+.solar-sidebar-btn.solar-sidebar-btn-active,
+.solar-sidebar-btn.btn-link.solar-sidebar-btn-active,
+.solar-sidebar-btn.solar-sidebar-btn-active:focus,
+.solar-sidebar-btn.solar-sidebar-btn-active:hover {
+  background: linear-gradient(135deg, #ea580c 0%, #f97316 50%, #fb923c 100%) !important;
+  color: #fff !important;
+  border-left: 3px solid rgba(255,255,255,0.6) !important;
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.25) !important;
+  text-decoration: none !important;
+  transform: none !important;
+}
+
+/* ─── Sticky filtre ─── */
+.solar-filter-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* ─── Scrollbar personnalisée ─── */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--solar-cream);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--solar-border);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--solar-amber);
+}

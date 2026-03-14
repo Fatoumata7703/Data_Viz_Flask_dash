@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>À propos - DashFlow</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="theme-about">
+    <div class="dashboard-wrapper">
+        <nav class="dashboard-nav">
+            <div class="nav-content">
+                <a href="/" class="nav-logo">⚡ DashFlow</a>
+                <div class="nav-links">
+                    <a href="/" class="nav-link">Accueil</a>
+                    <a href="/dash1" class="nav-link">Photovoltaïque</a>
+                    <a href="/dash2" class="nav-link">Assurance</a>
+                    <a href="/bank" class="nav-link">Bancaire</a>
+                    <a href="/pro" class="nav-link">Hospitalier</a>
+                    <a href="/a-propos" class="nav-link active">À propos</a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="about-container">
+            <header class="about-header">
+                <h1>À propos de DashFlow</h1>
+                <p class="about-intro">DashFlow est une plateforme de tableaux de bord interactifs qui regroupe quatre applications dédiées à des secteurs d’activité distincts. Chaque dashboard permet de visualiser des indicateurs clés, d’analyser des tendances et de piloter la performance à partir de données consolidées.</p>
+            </header>
+
+            <section class="about-section">
+                <h2 class="about-section__title">Les quatre dashboards</h2>
+                <p class="about-section__lead">Cliquez sur un dashboard dans la barre de navigation ou sur les liens ci‑dessous pour y accéder. Chaque tableau de bord est autonome et propose des filtres, des graphiques et des exports (PDF, Excel selon les modules).</p>
+            </section>
+
+            <div class="about-cards">
+                <article class="about-card about-card--green">
+                    <div class="about-card__accent"></div>
+                    <div class="about-card__icon about-card__icon--green">☀️</div>
+                    <h2 class="about-card__title">Production Photovoltaïque</h2>
+                    <p class="about-card__subtitle">Suivi et analyse de la production d’énergie solaire</p>
+                    <p class="about-card__desc">Ce dashboard permet de suivre la production des panneaux photovoltaïques (AC et DC), le rendement AC/DC, la production moyenne par heure, le taux d’anomalies et la température des modules. Idéal pour les exploitants et les analystes énergétiques.</p>
+                    <ul class="about-card__features">
+                        <li>Vue d’ensemble avec KPI : production AC/DC, rendement, prod. moy/h, anomalies, temp. module</li>
+                        <li>Graphiques de production horaire et journalière (AC vs DC)</li>
+                        <li>Production cumulée et courbes temporelles (quotidien, moyenne mobile 7j/30j)</li>
+                        <li>Environnement : température module, irradiation, plages de température</li>
+                        <li>Détection d’anomalies (production nulle, efficacité basse) et analyse des incidents</li>
+                        <li>Filtres par période et export des données</li>
+                    </ul>
+                    <p class="about-card__metrics"><strong>Indicateurs clés :</strong> Production AC, Production DC, Rendement AC/DC (%), Prod. moy/h, % Anomalies, Temp. module (°C)</p>
+                    <a href="/dash1" class="about-card__link">Accéder au dashboard Photovoltaïque →</a>
+                </article>
+
+                <article class="about-card about-card--blue">
+                    <div class="about-card__accent"></div>
+                    <div class="about-card__icon about-card__icon--blue">🛡️</div>
+                    <h2 class="about-card__title">Gestion des Sinistres</h2>
+                    <p class="about-card__subtitle">Assurance — sinistres et portefeuille assurés</p>
+                    <p class="about-card__desc">Tableau de bord dédié à l’analyse des sinistres et des caractéristiques des assurés. Il aide à suivre les volumes, les montants indemnisés, les primes et les ratios pour mieux piloter le risque et la rentabilité.</p>
+                    <ul class="about-card__features">
+                        <li>KPI : nombre d’assurés, sinistres, montant total, moyenne par sinistre, prime moyenne, ratio sinistres/primes</li>
+                        <li>Analyse des sinistres par type, période ou tranche d’âge</li>
+                        <li>Caractéristiques des assurés et répartition (âge, région, etc.)</li>
+                        <li>Statistiques avancées et tendances</li>
+                        <li>Filtres (période, type, tranche d’âge) et export PDF / Excel</li>
+                    </ul>
+                    <p class="about-card__metrics"><strong>Indicateurs clés :</strong> Assurés, Sinistres, Montant total, Moy. / sinistre, Prime moyenne, Ratio S/P</p>
+                    <a href="/dash2" class="about-card__link">Accéder au dashboard Assurance →</a>
+                </article>
+
+                <article class="about-card about-card--purple">
+                    <div class="about-card__accent"></div>
+                    <div class="about-card__icon about-card__icon--purple">🏦</div>
+                    <h2 class="about-card__title">Positionnement Bancaire</h2>
+                    <p class="about-card__subtitle">Secteur bancaire au Sénégal — KPI et comparaisons</p>
+                    <p class="about-card__desc">Dashboard stratégique sur le positionnement des banques au Sénégal. Il agrège les bilans, les emplois, les ressources, les fonds propres et d’autres indicateurs pour comparer les établissements et suivre l’évolution du secteur.</p>
+                    <ul class="about-card__features">
+                        <li>Vue d’ensemble : Total bilan, Banques actives, Produit net bancaire, Résultat net, Effectifs, Agences (filtrable par année, indicateur et banque)</li>
+                        <li>Évolution du bilan et répartition par groupe bancaire</li>
+                        <li>Top 10, parts de marché, positionnement (scatter), TCAM par groupe</li>
+                        <li>Indices de concentration (HHI), écart de performance, PNB, résultat net, ROE, coefficient d’exploitation</li>
+                        <li>Fiche banque, évolution et classement par banque</li>
+                        <li>Filtres Année / Indicateur / Banque et génération de rapports</li>
+                    </ul>
+                    <p class="about-card__metrics"><strong>Indicateurs clés :</strong> Total Bilan, Banques actives, PNB, Résultat net, Effectifs, Agences (en Mrd ou unités)</p>
+                    <a href="/bank" class="about-card__link">Accéder au dashboard Bancaire →</a>
+                </article>
+
+                <article class="about-card about-card--orange">
+                    <div class="about-card__accent"></div>
+                    <div class="about-card__icon about-card__icon--orange">🏥</div>
+                    <h2 class="about-card__title">Dashboard Hospitalier</h2>
+                    <p class="about-card__subtitle">Qualité de prise en charge, départements et risques</p>
+                    <p class="about-card__desc">Tableau de bord pour le suivi de l’activité hospitalière : départements actifs, patients, traitements disponibles et patients à risque. Il permet d’analyser la durée de séjour, les coûts et l’efficacité des traitements.</p>
+                    <ul class="about-card__features">
+                        <li>Accueil : KPI (départements, total patients, traitements, à risque), alerte et navigation par onglets</li>
+                        <li>Organisation : départements, effectifs, répartition</li>
+                        <li>Pathologies : nombre de pathologies, coûts, durée moyenne, coût/jour</li>
+                        <li>Profil patient et traitements : statistiques par traitement (total, coût moyen, durée, efficacité, patients traités)</li>
+                        <li>Risques : patients à risque, nouveau à traiter, indicateurs d’alerte</li>
+                        <li>Analyses : indicateurs agrégés et graphiques avancés</li>
+                    </ul>
+                    <p class="about-card__metrics"><strong>Indicateurs clés :</strong> Départements actifs, Total patients, Traitements disponibles, Patients à risque, Durée moy. séjour, Coût moyen, Efficacité</p>
+                    <a href="/pro" class="about-card__link">Accéder au dashboard Hospitalier →</a>
+                </article>
+            </div>
+
+            <section class="about-section about-section--footer">
+                <h2 class="about-section__title">Navigation</h2>
+                <p class="about-section__lead">Utilisez la barre de navigation en haut de la page pour passer d’un dashboard à l’autre. L’onglet <strong>À propos</strong> n’apparaît que lorsque vous êtes déjà dans un des quatre dashboards. La page d’accueil (<strong>Accueil</strong>) présente une vue d’ensemble des quatre modules avec des liens directs pour y accéder.</p>
+            </section>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
