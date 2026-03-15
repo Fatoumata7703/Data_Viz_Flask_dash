@@ -75,18 +75,6 @@ body {
   box-shadow: none !important;
 }
 
-/* Du, Au, Site alignés sur la même ligne (y compris sur Always Data) */
-.solar-filter-bar .solar-filter-row {
-  display: flex !important;
-  flex-wrap: nowrap !important;
-  align-items: flex-end !important;
-  gap: 0.5rem;
-}
-.solar-filter-bar .solar-filter-row .d-flex.flex-column {
-  align-items: flex-start;
-  min-width: 0;
-}
-
 /* Boutons pilule période */
 .solar-pill-btn {
   border-radius: 20px !important;
