@@ -146,9 +146,15 @@ def create_dash_app(server, url_base_pathname, requests_pathname_prefix=None):
     applied_default = {'start': date_min_str, 'end': date_max_str, 'site': None}
     app.config.suppress_callback_exceptions = True
     sites = [{'label': 'Tous les sites', 'value': None}]
-    if 'Country' in df.columns:
-        for s in sorted(df['Country'].dropna().unique()):
-            sites.append({'label': str(s), 'value': str(s)})
+    site_col = None
+    for col in ('Country', 'Site', 'Plant', 'Location', 'Source_Key', 'source_key'):
+        if col in df.columns and df[col].notna().any():
+            site_col = col
+            break
+    if site_col:
+        for s in sorted(df[site_col].dropna().astype(str).unique()):
+            if s.strip():
+                sites.append({'label': s.strip(), 'value': s.strip()})
 
     filter_card = dbc.Card([
         dbc.CardBody([
@@ -452,8 +458,8 @@ def create_dash_app(server, url_base_pathname, requests_pathname_prefix=None):
         out = df.copy()
         if start_date and end_date:
             out = out[(out['Date'] >= start_date) & (out['Date'] <= end_date)]
-        if site and 'Country' in out.columns:
-            out = out[out['Country'].astype(str) == str(site)]
+        if site and site_col and site_col in out.columns:
+            out = out[out[site_col].astype(str) == str(site)]
         _fd_cache_key = key
         _fd_cache = out.copy()
         return _fd_cache

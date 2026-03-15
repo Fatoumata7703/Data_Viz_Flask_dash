@@ -75,6 +75,95 @@ body {
   box-shadow: none !important;
 }
 
+/* Du, Au, Site : alignés au même niveau (labels et champs sur la même ligne) */
+.solar-filter-bar .solar-filter-row {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: flex-end !important;
+}
+.solar-filter-bar .solar-filter-row > [class*="col"] {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-end !important;
+  align-items: flex-start !important;
+}
+.solar-filter-bar .solar-filter-row > [class*="col"] .d-flex.flex-column.justify-content-center {
+  min-height: 52px !important;
+  justify-content: flex-end !important;
+  align-items: flex-start !important;
+}
+/* Même hauteur de champ pour Du, Au, Site (36px), largeur pour voir le texte sélectionné (ex. Australia) */
+.solar-filter-bar .solar-dropdown .Select-control,
+.solar-filter-bar .solar-dropdown > div:first-of-type {
+  height: 36px !important;
+  min-height: 36px !important;
+  min-width: 200px !important;
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: nowrap !important;
+}
+/* Chevron à GAUCHE — toujours visible (CSS si le composant n’en affiche pas) */
+.solar-filter-bar .solar-dropdown .Select-arrow-zone {
+  flex-shrink: 0 !important;
+  width: 28px !important;
+  min-width: 28px !important;
+  background: #fff !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  order: -1 !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+}
+.solar-filter-bar .solar-dropdown .Select-arrow-zone::after {
+  content: "" !important;
+  display: block !important;
+  width: 0 !important;
+  height: 0 !important;
+  border-left: 5px solid transparent !important;
+  border-right: 5px solid transparent !important;
+  border-top: 6px solid var(--solar-text-muted, #6b5b4f) !important;
+  margin-left: 0 !important;
+}
+.solar-filter-bar .solar-dropdown .Select-arrow-zone span,
+.solar-filter-bar .solar-dropdown .Select-arrow-zone svg {
+  display: none !important;
+}
+.solar-filter-bar .solar-dropdown .Select-value {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  padding-left: 4px !important;
+  padding-right: 56px !important;
+}
+.solar-filter-bar .solar-dropdown .Select-value-label {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  max-width: 100% !important;
+  display: block !important;
+}
+.solar-filter-bar .solar-dropdown .Select-input {
+  position: absolute !important;
+  left: -9999px !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+.solar-filter-bar .solar-dropdown .Select-clear-zone {
+  flex-shrink: 0 !important;
+  margin-left: auto !important;
+  width: 28px !important;
+  min-width: 28px !important;
+  background: #fff !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
 /* Boutons pilule période */
 .solar-pill-btn {
   border-radius: 20px !important;
@@ -124,15 +213,15 @@ body {
   box-shadow: 0 6px 16px rgba(234, 88, 12, 0.3) !important;
 }
 
-/* Date picker — rectangle bords arrondis, compact (Du / Au) */
+/* Date picker — même hauteur que Site (36px) pour alignement Du / Au / Site */
 .SingleDatePickerInput,
 .SingleDatePickerInput__withBorder {
   border-radius: 8px !important;
   border: 1.5px solid var(--solar-border) !important;
   background: var(--solar-card) !important;
   overflow: hidden;
-  height: 32px !important;
-  min-height: 32px !important;
+  height: 36px !important;
+  min-height: 36px !important;
   display: flex !important;
   align-items: center !important;
 }
@@ -147,8 +236,8 @@ body {
   font-size: 0.78rem !important;
   color: var(--solar-text) !important;
   padding: 0.2rem 0.5rem !important;
-  height: 28px !important;
-  line-height: 28px !important;
+  height: 34px !important;
+  line-height: 34px !important;
   text-align: center;
   border: none !important;
   background: transparent !important;
@@ -236,12 +325,26 @@ td.CalendarDay__selected {
   font-size: 0.82rem !important;
   font-weight: 500 !important;
 }
+.solar-filter-bar .solar-dropdown .Select-value-label,
+.solar-filter-bar .solar-dropdown .Select-placeholder {
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: nowrap !important;
+}
 .solar-dropdown .Select-menu-outer {
   border-radius: 8px !important;
   border: 1.5px solid var(--solar-border) !important;
   box-shadow: 0 8px 24px rgba(184,115,51,0.08) !important;
   margin-top: 4px !important;
-  overflow: hidden;
+  overflow-y: auto !important;
+  overflow-x: visible !important;
+  min-width: 200px !important;
+  width: max-content !important;
+  max-width: 320px !important;
+  box-sizing: border-box !important;
+}
+.solar-dropdown .Select-menu {
+  overflow: visible !important;
 }
 .solar-dropdown .VirtualizedSelectOption,
 .solar-dropdown .Select-option {
@@ -250,6 +353,14 @@ td.CalendarDay__selected {
   font-weight: 500 !important;
   transition: all 0.15s ease !important;
   border-bottom: 1px solid rgba(232,220,200,0.3);
+  overflow: visible !important;
+  white-space: nowrap !important;
+  text-overflow: clip !important;
+  box-sizing: border-box !important;
+}
+.solar-dropdown .VirtualizedSelectOption > div,
+.solar-dropdown .Select-option > div {
+  overflow: visible !important;
 }
 .solar-dropdown .VirtualizedSelectOption:hover,
 .solar-dropdown .Select-option:hover,
