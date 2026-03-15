@@ -1,7 +1,7 @@
 """Cartes de statistiques avec icônes SVG professionnelles"""
 import dash_bootstrap_components as dbc
 from dash import html
-from layout.icons import create_icon_svg
+from .icons import create_icon_svg
 
 def create_stat_cards(kpis, df):
     """Crée les cartes de statistiques avec les couleurs exactes de l'image"""

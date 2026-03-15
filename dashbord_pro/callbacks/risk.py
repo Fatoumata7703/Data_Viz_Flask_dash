@@ -3,8 +3,8 @@ from dash import Input, Output, State, callback_context
 from dash import dash_table
 import dash_bootstrap_components as dbc
 from dash import html
-from utils import filter_data, get_risk_patients, format_number
-from callbacks.constants import COLORS
+from dashbord_pro.utils import filter_data, get_risk_patients, format_number
+from .constants import COLORS
 
 def register_risk_callbacks(app, df):
     """Enregistre les callbacks pour les patients à risque"""
@@ -25,7 +25,7 @@ def register_risk_callbacks(app, df):
     )
     def update_risk_stats(departement, maladie, traitement, sexe, age_min, age_max):
         """Met à jour les statistiques des patients à risque"""
-        from utils import filter_data, get_risk_patients, format_number
+        from dashbord_pro.utils import filter_data, get_risk_patients, format_number
         
         # Gérer les valeurs None
         if departement is None:

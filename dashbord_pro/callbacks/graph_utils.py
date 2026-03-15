@@ -1,5 +1,5 @@
 """Utilitaires pour les graphiques avec thème moderne"""
-from callbacks.constants import COLORS
+from .constants import COLORS
 
 def get_modern_layout(title, xaxis_title, yaxis_title, height=400):
     """Retourne un layout moderne pour les graphiques"""

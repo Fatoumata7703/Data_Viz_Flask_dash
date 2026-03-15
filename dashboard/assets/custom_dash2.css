@@ -46,6 +46,22 @@
   z-index: 100;
   min-height: 72px !important;
 }
+
+/* Désactiver les styles Bootstrap (focus violet/bleu, outline) — on garde uniquement notre thème assurance */
+.ins-filter-bar *,
+.ins-filter-bar *:focus {
+  outline: none !important;
+}
+.ins-filter-bar .form-control,
+.ins-filter-bar .form-control:focus,
+.ins-filter-bar input,
+.ins-filter-bar input:focus {
+  box-shadow: none !important;
+  border-color: var(--ins-border) !important;
+}
+.ins-filter-bar .Select-control {
+  box-shadow: none !important;
+}
 .ins-filter-body {
   padding: 14px 20px !important;
   display: flex !important;
@@ -377,3 +393,27 @@
   color: var(--ins-primary) !important;
 }
 
+/* ═══ Override Bootstrap en production : garder le style local (priorité max) ═══ */
+body .ins-filter-bar .form-control,
+body .ins-filter-bar .form-control:focus,
+body .ins-filter-bar input,
+body .ins-filter-bar select,
+body .ins-filter-bar .form-select {
+  box-shadow: none !important;
+  border-color: var(--ins-border) !important;
+  border-radius: 8px !important;
+  background: var(--ins-card) !important;
+  color: var(--ins-text) !important;
+}
+body .ins-filter-bar .Select-control,
+body .ins-filter-bar .ins-dropdown .Select-control,
+body .ins-filter-bar [class*="Select"] {
+  box-shadow: none !important;
+  border-color: var(--ins-border) !important;
+  border-radius: 8px !important;
+  background: var(--ins-card) !important;
+}
+body .ins-navbar {
+  background: linear-gradient(135deg, #1a3a5c 0%, #0f2a45 50%, #2c5f8a 100%) !important;
+  border-radius: 0 0 var(--ins-radius) var(--ins-radius) !important;
+}

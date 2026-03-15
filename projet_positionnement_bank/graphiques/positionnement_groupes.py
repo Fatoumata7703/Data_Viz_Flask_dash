@@ -1,7 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-from IPython.display import HTML, display
 
 def positionnement_groupes_bancaires(df, colonne_metrique, titre_graphique, annee_col='ANNEE', annee_debut=2015, annee_fin=2020, ax=None):
     """

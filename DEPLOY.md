@@ -28,10 +28,21 @@ mongorestore --uri="mongodb+srv://USER:PASSWORD@cluster0.xxxxx.mongodb.net" --db
 
 1. **Compte** sur [AlwaysData](https://www.alwaysdata.com).
 2. **Créer un site** → type **Python** / **WSGI**.
-3. **Répertoire de l’application** : racine du dépôt (où se trouvent `app.py`, `wsgi.py`).
+3. **Répertoire de l’application** : racine du dépôt (ex. `/home/tata/www/Flash_dash`, où se trouvent `app.py`, `wsgi.py`).
 4. **Fichier d’entrée WSGI** : `wsgi.py` (le module expose `application`).
-5. **Variables d’environnement** : dans le panneau AlwaysData, définir `MONGO_URI` avec l’URI Atlas (pour les 4 dashboards). Pour le bancaire, le projet charge aussi depuis `projet_positionnement_bank/.env` si présent ; en prod, privilégier la variable d’environnement du serveur.
-6. **Dépendances** : configurer l’installation des paquets (ex. `pip install -r requirements.txt` selon la doc AlwaysData).
+5. **Environnement virtuel et dépendances** (obligatoire, sinon « No module named 'flask' ») :
+   - Ouvrir un **terminal distant** (SSH ou « Exécuter une commande » dans le panneau AlwaysData).
+   - Aller dans le répertoire du projet et créer un venv puis installer les paquets :
+   ```bash
+   cd /home/tata/www/Flash_dash
+   python3 -m venv venv
+   source venv/bin/activate
+   pip install --upgrade pip
+   pip install -r requirements.txt
+   ```
+   - Dans le panneau AlwaysData : **Site** → ton site → **Paramètres** (ou **Configuration**) → champ **Environnement virtuel** (ou **Virtualenv**) : indiquer le chemin complet du venv, par ex. `/home/tata/www/Flash_dash/venv`.
+   - Redémarrer l’application (bouton « Redémarrer » ou enregistrer les paramètres).
+6. **Variables d’environnement** : dans le panneau AlwaysData (souvent dans **Variables d’environnement** ou **Environnement**), définir `MONGO_URI` avec l’URI Atlas (pour les 4 dashboards).
 
 ### Option B : Render (gratuit, simple)
 
@@ -77,8 +88,82 @@ Si ton point d’entrée est `run.py` qui lance `app.server`, tu peux :
 
 ---
 
-## 4. Résumé minimal (Atlas + hébergement)
+## 4. Dépannage : « Loading... » en ligne (AlwaysData)
+
+Si la page d’accueil et « À propos » s’affichent mais que les dashboards (Photovoltaïque, Assurance, Bancaire, Hospitalier) restent sur « Loading... » :
+
+1. **Définir `MONGO_URI` sur AlwaysData**  
+   Le fichier `.env` n’est pas déployé (dans `.gitignore`). Il faut donc ajouter la variable dans le panneau : **Site** → **data_viz** → **Configuration** → **Variables d’environnement** → Nom : `MONGO_URI`, Valeur : ton URI Atlas (ex. `mongodb+srv://user:pass@cluster0.xxxxx.mongodb.net/?appName=Cluster0`). Puis **redémarrer** le site.
+
+2. **MongoDB Atlas – Network Access**  
+   Dans Atlas → **Network Access**, autoriser l’accès depuis n’importe où (`0.0.0.0/0`) pour que le serveur AlwaysData puisse se connecter.
+
+3. **Premier chargement**  
+   Au premier chargement, l’app peut prendre 15–30 s (connexion Atlas + chargement des 4 dashboards). Attendre un peu avant de conclure à une erreur.
+
+---
+
+## 4.1 Style des filtres différent en ligne (app_bank, dash1, dash2)
+
+Si en ligne les filtres (barre blanche, dropdowns, boutons) n’ont pas le même style qu’en local (couleurs, bordures, boutons « 7j / 30j » etc.), c’est en général que **les CSS personnalisés ne se chargent pas** : les assets sont demandés sans le préfixe `/data_viz`, donc en 404.
+
+**À faire :**
+
+1. **Point d’entrée AlwaysData**  
+   Utiliser **`wsgi:application`** (fichier `wsgi.py`, variable `application`), et **pas** `app:server`.  
+   `wsgi.py` définit `APPLICATION_ROOT=/data_viz` **avant** d’importer `app`, ce qui permet à Dash de générer les bonnes URLs pour les CSS (ex. `/data_viz/bank/assets/custom.css`).
+
+2. **Si tu n’utilises pas wsgi.py** (ex. gunicorn seul)  
+   Définir la variable d’environnement **`APPLICATION_ROOT=/data_viz`** dans le panneau AlwaysData (**Site** → **Configuration** → **Variables d’environnement**), puis redémarrer. Elle doit être définie **avant** le chargement de l’app.
+
+3. **Accéder au site avec le préfixe**  
+   Ouvrir l’app via `https://ton-domaine.alwaysdata.net/data_viz` (puis Bancaire, Photovoltaïque, etc.). Ne pas utiliser une URL sans `/data_viz` pour les dashboards.
+
+Quand c’est correct, les requêtes réseau (comme en local) chargent notamment : `style.css`, `script.js`, `bank/` (ou `dash1/`, `dash2/`), puis les assets Dash (Bootstrap, Inter, composants) sous `/data_viz/bank/...` (ou dash1/dash2), et les filtres ont le même rendu qu’en local.
+
+---
+
+## 5. Résumé minimal (Atlas + hébergement)
 
 1. Créer un cluster MongoDB Atlas, récupérer l’URI. Créer / peupler les bases : `bank_prod.prod` (sync avec `sync_local_to_atlas`), `flash_dash` (solar, assurance, hospital avec `upload_csv_to_atlas.py`).
 2. **AlwaysData** : site WSGI, entrée `wsgi.py`, variable `MONGO_URI`. **Render** : Web Service → Build `pip install -r requirements.txt` → Start `gunicorn -w 2 -b 0.0.0.0:$PORT app:server`, variable `MONGO_URI`.
 3. Déployer ; l’app utilisera Atlas pour les 4 dashboards.
+
+---
+
+## 6. Rapport bancaire (génération HTML) — AlwaysData
+
+Le rapport de positionnement bancaire (PDF/HTML) est généré à partir du notebook `projet_positionnement_bank/rapport.ipynb`. En ligne, il peut échouer avec **« No module named 'matplotlib' »** ou **« No module named 'IPython' »** si les dépendances ne sont pas installées.
+
+### Commandes à exécuter manuellement sur AlwaysData
+
+1. **Ouvrir un terminal distant** (SSH ou « Exécuter une commande » dans le panneau AlwaysData).
+
+2. **Aller dans le répertoire du projet et activer l’environnement virtuel** :
+   ```bash
+   cd /home/VOTRE_USER/www/Flash_dash
+   source venv/bin/activate
+   ```
+
+3. **Réinstaller les dépendances** (pour être sûr que `matplotlib` est présent) :
+   ```bash
+   pip install -r requirements.txt
+   ```
+   (Le fichier `requirements.txt` inclut déjà `matplotlib` ; cette commande met à jour si besoin.)
+
+4. **Optionnel — IPython** (pour un affichage HTML plus riche dans le notebook ; le rapport peut se générer sans) :
+   ```bash
+   pip install ipython
+   ```
+
+5. **Redémarrer l’application** (bouton « Redémarrer » du site dans le panneau AlwaysData).
+
+6. **Regénérer le rapport** : depuis l’interface du dashboard bancaire, choisir une banque et une année puis cliquer sur **« Rapport »** pour télécharger le HTML. Si tout est installé, les sections avec graphiques (matplotlib) et les blocs HTML (display) s’afficheront correctement.
+
+### Comportement si matplotlib ou IPython manquent
+
+Le notebook a été rendu **tolérant** :
+- Si **matplotlib** est absent : les cellules qui dessinent des graphiques affichent « Graphique non disponible (matplotlib manquant). » au lieu de planter.
+- Si **IPython** est absent : les blocs HTML sont affichés en texte brut (sans mise en forme) au lieu de planter.
+
+Pour avoir les graphiques et la mise en forme complète, installe au minimum **matplotlib** (déjà dans `requirements.txt`).

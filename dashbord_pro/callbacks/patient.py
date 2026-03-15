@@ -3,8 +3,8 @@ from dash import Input, Output, State, callback_context
 import plotly.graph_objs as go
 import dash_bootstrap_components as dbc
 from dash import html
-from utils import filter_data, format_number
-from callbacks.constants import COLORS
+from dashbord_pro.utils import filter_data, format_number
+from .constants import COLORS
 
 def register_patient_callbacks(app, df):
     """Enregistre les callbacks pour le profil patient"""
@@ -25,7 +25,7 @@ def register_patient_callbacks(app, df):
     )
     def update_patient_stats(departement, maladie, traitement, sexe, age_min, age_max):
         """Met à jour les statistiques du profil patient"""
-        from utils import filter_data, format_number
+        from dashbord_pro.utils import filter_data, format_number
         
         # Gérer les valeurs None
         if departement is None:

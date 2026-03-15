@@ -61,7 +61,7 @@ def load_data():
     if _cfg and getattr(_cfg, "MONGO_URI", "").strip() and "mongodb+srv" in getattr(_cfg, "MONGO_URI", ""):
         try:
             from pymongo import MongoClient
-            client = MongoClient(_cfg.MONGO_URI, serverSelectionTimeoutMS=5000)
+            client = MongoClient(_cfg.MONGO_URI, serverSelectionTimeoutMS=500, connectTimeoutMS=500)
             coll = client[_cfg.FLASH_DASH_DB][_cfg.HOSPITAL_COLLECTION]
             docs = list(coll.find({}))
             client.close()

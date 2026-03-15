@@ -10,14 +10,14 @@
     <div class="dashboard-wrapper">
         <nav class="dashboard-nav">
             <div class="nav-content">
-                <a href="/" class="nav-logo">⚡ DashFlow</a>
+                <a href="{{ base_slash }}" class="nav-logo">⚡ DashFlow</a>
                 <div class="nav-links">
-                    <a href="/" class="nav-link">Accueil</a>
-                    <a href="/dash1" class="nav-link">Photovoltaïque</a>
-                    <a href="/dash2" class="nav-link">Assurance</a>
-                    <a href="/bank" class="nav-link">Bancaire</a>
-                    <a href="/pro" class="nav-link">Hospitalier</a>
-                    <a href="/a-propos" class="nav-link active">À propos</a>
+                    <a href="{{ base_slash }}" class="nav-link">Accueil</a>
+                    <a href="{{ base_slash }}dash1" class="nav-link">Photovoltaïque</a>
+                    <a href="{{ base_slash }}dash2" class="nav-link">Assurance</a>
+                    <a href="{{ base_slash }}bank" class="nav-link">Bancaire</a>
+                    <a href="{{ base_slash }}pro" class="nav-link">Hospitalier</a>
+                    <a href="{{ base_slash }}a-propos" class="nav-link active">À propos</a>
                 </div>
             </div>
         </nav>
@@ -49,7 +49,7 @@
                         <li>Filtres par période et export des données</li>
                     </ul>
                     <p class="about-card__metrics"><strong>Indicateurs clés :</strong> Production AC, Production DC, Rendement AC/DC (%), Prod. moy/h, % Anomalies, Temp. module (°C)</p>
-                    <a href="/dash1" class="about-card__link">Accéder au dashboard Photovoltaïque →</a>
+                    <a href="{{ base_slash }}dash1" class="about-card__link">Accéder au dashboard Photovoltaïque →</a>
                 </article>
 
                 <article class="about-card about-card--blue">
@@ -66,7 +66,7 @@
                         <li>Filtres (période, type, tranche d’âge) et export PDF / Excel</li>
                     </ul>
                     <p class="about-card__metrics"><strong>Indicateurs clés :</strong> Assurés, Sinistres, Montant total, Moy. / sinistre, Prime moyenne, Ratio S/P</p>
-                    <a href="/dash2" class="about-card__link">Accéder au dashboard Assurance →</a>
+                    <a href="{{ base_slash }}dash2" class="about-card__link">Accéder au dashboard Assurance →</a>
                 </article>
 
                 <article class="about-card about-card--purple">
@@ -84,7 +84,7 @@
                         <li>Filtres Année / Indicateur / Banque et génération de rapports</li>
                     </ul>
                     <p class="about-card__metrics"><strong>Indicateurs clés :</strong> Total Bilan, Banques actives, PNB, Résultat net, Effectifs, Agences (en Mrd ou unités)</p>
-                    <a href="/bank" class="about-card__link">Accéder au dashboard Bancaire →</a>
+                    <a href="{{ url_for('bank') }}" class="about-card__link">Accéder au dashboard Bancaire →</a>
                 </article>
 
                 <article class="about-card about-card--orange">
@@ -102,7 +102,7 @@
                         <li>Analyses : indicateurs agrégés et graphiques avancés</li>
                     </ul>
                     <p class="about-card__metrics"><strong>Indicateurs clés :</strong> Départements actifs, Total patients, Traitements disponibles, Patients à risque, Durée moy. séjour, Coût moyen, Efficacité</p>
-                    <a href="/pro" class="about-card__link">Accéder au dashboard Hospitalier →</a>
+                    <a href="{{ base_slash }}pro" class="about-card__link">Accéder au dashboard Hospitalier →</a>
                 </article>
             </div>
 

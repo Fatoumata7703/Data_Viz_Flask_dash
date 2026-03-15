@@ -1,6 +1,6 @@
 """Carte d'alerte pour les patients à risque"""
 from dash import html, dcc
-from layout.icons import create_icon_svg
+from .icons import create_icon_svg
 
 def create_alert_card(count):
     """Crée la carte d'alerte"""

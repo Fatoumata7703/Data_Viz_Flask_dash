@@ -55,6 +55,38 @@ body {
   z-index: 100;
 }
 
+/* Désactiver les styles Bootstrap (focus violet/bleu, outline) — on garde uniquement notre thème solaire */
+.solar-filter-bar *,
+.solar-filter-bar *:focus {
+  outline: none !important;
+}
+.solar-filter-bar .form-control,
+.solar-filter-bar .form-control:focus,
+.solar-filter-bar input,
+.solar-filter-bar input:focus {
+  box-shadow: none !important;
+  border-color: var(--solar-border) !important;
+}
+.solar-filter-bar .Select-control {
+  box-shadow: none !important;
+}
+.solar-filter-bar [class*="SingleDatePicker"],
+.solar-filter-bar [class*="DateInput"] {
+  box-shadow: none !important;
+}
+
+/* Du, Au, Site alignés sur la même ligne (y compris sur Always Data) */
+.solar-filter-bar .solar-filter-row {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: flex-end !important;
+  gap: 0.5rem;
+}
+.solar-filter-bar .solar-filter-row .d-flex.flex-column {
+  align-items: flex-start;
+  min-width: 0;
+}
+
 /* Boutons pilule période */
 .solar-pill-btn {
   border-radius: 20px !important;
@@ -104,7 +136,7 @@ body {
   box-shadow: 0 6px 16px rgba(234, 88, 12, 0.3) !important;
 }
 
-/* Date picker — rectangle bords arrondis, compact */
+/* Date picker — rectangle bords arrondis, compact (Du / Au) */
 .SingleDatePickerInput,
 .SingleDatePickerInput__withBorder {
   border-radius: 8px !important;
@@ -112,13 +144,17 @@ body {
   background: var(--solar-card) !important;
   overflow: hidden;
   height: 32px !important;
+  min-height: 32px !important;
   display: flex !important;
   align-items: center !important;
 }
-.SingleDatePickerInput .DateInput {
+.SingleDatePickerInput .DateInput,
+.solar-filter-bar .solar-date-single .DateInput {
   width: 95px !important;
 }
-.SingleDatePickerInput .DateInput_input {
+.SingleDatePickerInput .DateInput_input,
+.solar-filter-bar .solar-date-single input,
+.solar-filter-bar .solar-date-single .DateInput_input {
   font-weight: 600 !important;
   font-size: 0.78rem !important;
   color: var(--solar-text) !important;
@@ -129,8 +165,64 @@ body {
   border: none !important;
   background: transparent !important;
 }
-.SingleDatePickerInput_calendarIcon {
+.SingleDatePickerInput_calendarIcon,
+.solar-filter-bar .solar-date-single .SingleDatePickerInput_calendarIcon {
   display: none !important;
+}
+
+/* Calendrier (popup) — remplacer le violet par le thème solaire (react-dates / dcc) */
+.CalendarDay__selected,
+.CalendarDay__selected:active,
+.CalendarDay__selected:hover,
+td.CalendarDay__selected {
+  background: var(--solar-orange) !important;
+  border: 1px solid #ea580c !important;
+  color: #fff !important;
+}
+.CalendarDay__hovered_span:hover,
+.CalendarDay__hovered_span:active {
+  background: rgba(184, 115, 51, 0.15) !important;
+  border-color: var(--solar-orange) !important;
+  color: var(--solar-text) !important;
+}
+.DayPicker_weekHeader_li,
+.CalendarMonth_caption,
+.DayPickerNavigation_button_1,
+.DayPickerNavigation_button_2,
+.CalendarMonthGrid__vertical .CalendarMonth_caption,
+[class*="CalendarMonth_caption"],
+[class*="DayPickerNavigation"] {
+  color: var(--solar-text) !important;
+}
+.DayPickerNavigation_button_1 svg,
+.DayPickerNavigation_button_2 svg,
+[class*="DayPickerNavigation"] svg {
+  fill: var(--solar-text) !important;
+}
+.SingleDatePicker_picker,
+.DayPicker__horizontal {
+  border-radius: var(--radius) !important;
+  box-shadow: var(--shadow-lg) !important;
+  border: 1px solid var(--solar-border) !important;
+}
+/* Tout élément du calendrier en violet → orange (sélection, focus, hover) */
+.SingleDatePicker_picker [class*="CalendarDay"][class*="selected"],
+.DayPicker [class*="CalendarDay"][class*="selected"],
+.SingleDatePicker_picker td[class*="selected"],
+.DayPicker td[class*="selected"] {
+  background: #ea580c !important;
+  background-color: #ea580c !important;
+  border-color: #ea580c !important;
+  color: #fff !important;
+}
+.SingleDatePicker_picker button,
+.DayPicker button,
+.SingleDatePicker_picker [class*="Navigation"] {
+  color: var(--solar-text) !important;
+}
+.SingleDatePicker_picker svg,
+.DayPicker svg {
+  fill: var(--solar-text) !important;
 }
 
 /* Dropdown premium */
@@ -488,4 +580,28 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--solar-amber);
+}
+
+/* ═══ Override Bootstrap en production : garder le style local (priorité max) ═══ */
+body .solar-filter-bar .form-control,
+body .solar-filter-bar .form-control:focus,
+body .solar-filter-bar input,
+body .solar-filter-bar select,
+body .solar-filter-bar .form-select {
+  box-shadow: none !important;
+  border-color: var(--solar-border) !important;
+  border-radius: var(--radius-sm) !important;
+  background: var(--solar-card) !important;
+  color: var(--solar-text) !important;
+}
+body .solar-filter-bar .Select-control,
+body .solar-filter-bar [class*="Select"] {
+  box-shadow: none !important;
+  border-color: var(--solar-border) !important;
+  border-radius: var(--radius-sm) !important;
+  background: var(--solar-card) !important;
+}
+body .navbar-dark {
+  background: linear-gradient(135deg, #ea580c 0%, #f97316 50%, #fb923c 100%) !important;
+  border-radius: 0 0 var(--radius) var(--radius) !important;
 }

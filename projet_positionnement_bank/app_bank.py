@@ -49,6 +49,9 @@ ANNEES = sorted(df_raw[A].dropna().astype(int).unique().tolist())
 AN_DEF = int(ANNEES[-1]) if ANNEES else 2020
 BANQUES = sorted(df_raw[B].dropna().unique().astype(str))
 GROUPES = sorted(df_raw[G].dropna().unique().astype(str)) if G in df_raw.columns else []
+# Options initiales pour le dropdown Banque (année par défaut) — évite "No results found" au chargement
+_banques_def = sorted(df_raw.loc[df_raw[A] == AN_DEF, B].dropna().unique().astype(str).tolist())
+OPTIONS_BANQUE_DEF = [{"label": "Toutes les banques", "value": ""}] + [{"label": b, "value": b} for b in _banques_def]
 
 # ══════ Palette bancaire — Bleu clair & lumineux ══════
 C_BG = "#f0f4f8"
@@ -300,14 +303,14 @@ filters = dbc.Card(dbc.CardBody([
         ], lg=3, md=3, xs=6, className="bk-filter-col"),
         dbc.Col([
             html.Label("Banque", className="bk-filter-label"),
-            dcc.Dropdown(id="dd-banque", options=[], value="", placeholder="Toutes les banques", className="bk-dropdown"),
+            dcc.Dropdown(id="dd-banque", options=OPTIONS_BANQUE_DEF, value="", placeholder="Toutes les banques", className="bk-dropdown"),
         ], lg=4, md=3, xs=6, className="bk-filter-col"),
         dbc.Col([
             html.Label("\u00a0", className="bk-filter-label"),
             dbc.Button([html.Span("📥 "), "Rapport"], id="quick-report-btn", className="bk-btn-primary bk-filter-btn"),
             dcc.Download(id="quick-download-html"),
         ], lg=3, md=12, className="bk-filter-col bk-filter-col-btn"),
-    ], className="g-3 align-items-end"),
+    ], className="bk-filter-row"),
 ]), className="bk-filter-bar")
 
 
@@ -331,6 +334,7 @@ LAYOUT = html.Div([
             html.Div([
                 html.Div("🏦", className="bk-toast-icon"),
                 html.Span("Veuillez sélectionner une banque.", className="bk-toast-line"),
+                html.Button("×", id="toast-report-close", className="bk-toast-close", title="Fermer", type="button"),
             ], className="bk-toast-body-inner"),
             id="toast-report",
             header=None,
@@ -343,22 +347,30 @@ LAYOUT = html.Div([
 ], className="bk-app")
 
 
-def create_dash_app(server=None, url_base_pathname="/bank/"):
+def create_dash_app(server=None, url_base_pathname="/bank/", requests_pathname_prefix=None):
+    if url_base_pathname and not url_base_pathname.startswith("/"):
+        url_base_pathname = "/" + url_base_pathname
     """
     Crée l'application Dash bancaire (pour montage Flask ou exécution standalone).
     Comme dashboard/dash1.py et dash2.py : appelée par app.py avec server et url_base_pathname.
     """
-    app = dash.Dash(
-        __name__,
+    _assets_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
+    kwargs = dict(
         server=server,
-        url_base_pathname=url_base_pathname,
         external_stylesheets=[
             dbc.themes.FLATLY,
             "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap",
         ],
         meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}],
         suppress_callback_exceptions=True,
+        assets_folder=_assets_dir,
     )
+    if requests_pathname_prefix is not None:
+        kwargs["routes_pathname_prefix"] = url_base_pathname
+        kwargs["requests_pathname_prefix"] = requests_pathname_prefix
+    else:
+        kwargs["url_base_pathname"] = url_base_pathname
+    app = dash.Dash(__name__, **kwargs)
     app.title = "Positionnement Bancaire — Sénégal"
     app.layout = LAYOUT
     register_callbacks(app)
@@ -451,16 +463,24 @@ def register_callbacks(app):
         return cards
 
 
+    def _default_sf(sf):
+        if not sf:
+            return {"annee": AN_DEF, "indicateur": INDICATEURS[0][0], "banque": "", "groupe": ""}
+        return sf
+
     # ── Evolution bilan ──
     @app.callback(Output("g-evo-bilan", "figure"), Input("store-filters", "data"))
     def update_evo_bilan(sf):
+        sf = _default_sf(sf)
         ind = sf["indicateur"]
         an = sf["annee"]
-        a_start = max(an - 4, min(ANNEES))
-        d = df_raw[df_raw[A].between(a_start, an)]
-        if ind not in d.columns:
-            return _empty("Indicateur non disponible")
+        a_start = max(an - 4, min(ANNEES)) if ANNEES else an
+        d = df_raw[df_raw[A].between(a_start, an)] if len(df_raw) else pd.DataFrame()
+        if ind not in d.columns or len(d) == 0:
+            return _empty("Indicateur non disponible" if ind not in df_raw.columns else "Pas de données pour cette période")
         by_y = d.groupby(A)[ind].sum().reset_index().sort_values(A)
+        if len(by_y) == 0:
+            return _empty("Pas de données pour cette période")
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=by_y[A].astype(int), y=by_y[ind], mode="lines+markers",
                                  line=dict(color=C_ACCENT, width=3, shape="spline"),
@@ -475,6 +495,7 @@ def register_callbacks(app):
     # ── Répartition groupes ──
     @app.callback(Output("g-repart-groupe", "figure"), Input("store-filters", "data"))
     def update_repart_groupe(sf):
+        sf = _default_sf(sf)
         d = _filter(sf["annee"])
         ind = sf["indicateur"]
         if G not in d.columns or ind not in d.columns:
@@ -514,6 +535,7 @@ def register_callbacks(app):
     # ── Parts de marché ──
     @app.callback(Output("g-parts-marche", "figure"), Input("store-filters", "data"))
     def update_parts(sf):
+        sf = _default_sf(sf)
         d = _filter(sf["annee"])
         ind = sf["indicateur"]
         if ind not in d.columns:
@@ -534,6 +556,7 @@ def register_callbacks(app):
     # ── Scatter positionnement groupes ──
     @app.callback(Output("g-scatter-pos", "figure"), Input("store-filters", "data"))
     def update_scatter_pos(sf):
+        sf = _default_sf(sf)
         ind = sf["indicateur"]
         an = sf["annee"]
         if ind not in df_raw.columns or G not in df_raw.columns:
@@ -567,11 +590,12 @@ def register_callbacks(app):
     # ── TCAM groupes ──
     @app.callback(Output("g-tcam-groupes", "figure"), Input("store-filters", "data"))
     def update_tcam_groupes(sf):
+        sf = _default_sf(sf)
         ind = sf["indicateur"]
         an = sf["annee"]
         if ind not in df_raw.columns or G not in df_raw.columns:
             return _empty("Données insuffisantes")
-        a_start = max(min(ANNEES), an - 5)
+        a_start = max(min(ANNEES), an - 5) if ANNEES else an
         d_s = df_raw[df_raw[A] == a_start].groupby(G)[ind].sum().reset_index()
         d_e = df_raw[df_raw[A] == an].groupby(G)[ind].sum().reset_index()
         d_s.columns = [G, "v0"]
@@ -597,12 +621,13 @@ def register_callbacks(app):
     # ── Scatter banques ──
     @app.callback(Output("g-scatter-banques", "figure"), Input("store-filters", "data"))
     def update_scatter_banques(sf):
+        sf = _default_sf(sf)
         ind = sf["indicateur"]
         an = sf["annee"]
         banque_sel = sf.get("banque", "")
         if ind not in df_raw.columns:
             return _empty("Indicateur non disponible")
-        a_start = max(min(ANNEES), an - 5)
+        a_start = max(min(ANNEES), an - 5) if ANNEES else an
         d_s = df_raw[df_raw[A] == a_start].groupby(B)[ind].sum().reset_index()
         d_e = df_raw[df_raw[A] == an].groupby(B)[ind].sum().reset_index()
         d_s.columns = [B, "v0"]
@@ -634,6 +659,7 @@ def register_callbacks(app):
     # ── Ranking ──
     @app.callback(Output("g-bar-ranking", "figure"), Input("store-filters", "data"))
     def update_ranking(sf):
+        sf = _default_sf(sf)
         d = _filter(sf["annee"])
         ind = sf["indicateur"]
         banque_sel = sf.get("banque", "")
@@ -655,6 +681,7 @@ def register_callbacks(app):
     # ── Evo Top 5 ──
     @app.callback(Output("g-evo-top5", "figure"), Input("store-filters", "data"))
     def update_evo_top5(sf):
+        sf = _default_sf(sf)
         ind = sf["indicateur"]
         an = sf["annee"]
         if ind not in df_raw.columns:
@@ -676,6 +703,7 @@ def register_callbacks(app):
     # ── HHI ──
     @app.callback(Output("g-hhi", "figure"), Input("store-filters", "data"))
     def update_hhi(sf):
+        sf = _default_sf(sf)
         ind = sf["indicateur"]
         if ind not in df_raw.columns:
             return _empty("Indicateur non disponible")
@@ -709,12 +737,17 @@ def register_callbacks(app):
     # ── Écart performance ──
     @app.callback(Output("g-ecart-perf", "figure"), Input("store-filters", "data"))
     def update_ecart(sf):
+        sf = _default_sf(sf)
         d = _filter(sf["annee"])
         ind = sf["indicateur"]
-        if ind not in d.columns:
+        if ind not in d.columns or len(d) == 0:
             return _empty("Indicateur non disponible")
         agg = d.groupby(B)[ind].sum().reset_index()
+        if len(agg) == 0:
+            return _empty("Pas de données")
         mean_v = agg[ind].mean()
+        if mean_v == 0:
+            return _empty("Pas de données")
         agg["ecart"] = ((agg[ind] - mean_v) / mean_v * 100).round(1)
         agg = agg.sort_values("ecart", ascending=True)
         colors = [C_GREEN if e >= 0 else C_RED for e in agg["ecart"]]
@@ -733,6 +766,7 @@ def register_callbacks(app):
     # ── PNB ──
     @app.callback(Output("g-pnb", "figure"), Input("store-filters", "data"))
     def update_pnb(sf):
+        sf = _default_sf(sf)
         col = "produit_net_bancaire"
         if col not in df_raw.columns:
             return _empty("PNB non disponible")
@@ -754,6 +788,7 @@ def register_callbacks(app):
     # ── Résultat Net ──
     @app.callback(Output("g-resultat-net", "figure"), Input("store-filters", "data"))
     def update_rn(sf):
+        sf = _default_sf(sf)
         col = "resultat_net"
         if col not in df_raw.columns:
             return _empty("Résultat net non disponible")
@@ -775,6 +810,7 @@ def register_callbacks(app):
     # ── ROE ──
     @app.callback(Output("g-roe", "figure"), Input("store-filters", "data"))
     def update_roe(sf):
+        sf = _default_sf(sf)
         rn_col = "resultat_net"
         fp_col = "FONDS_PROPRES" if "FONDS_PROPRES" in df_raw.columns else "fonds_propres"
         if rn_col not in df_raw.columns or fp_col not in df_raw.columns:
@@ -799,6 +835,7 @@ def register_callbacks(app):
     # ── Coefficient exploitation ──
     @app.callback(Output("g-coef-exploit", "figure"), Input("store-filters", "data"))
     def update_coef(sf):
+        sf = _default_sf(sf)
         pnb_col = "produit_net_bancaire"
         cge_col = "charges_generales_d'exploitation"
         if pnb_col not in df_raw.columns or cge_col not in df_raw.columns:
@@ -824,6 +861,7 @@ def register_callbacks(app):
     # ── Structure ──
     @app.callback(Output("g-structure", "figure"), Input("store-filters", "data"))
     def update_structure(sf):
+        sf = _default_sf(sf)
         cols = [c for c, _ in INDICATEURS if c in df_raw.columns]
         if not cols:
             return _empty("Pas d'indicateurs")
@@ -843,6 +881,7 @@ def register_callbacks(app):
     # ── Fiche banque ──
     @app.callback(Output("g-fiche-banque", "figure"), Input("store-filters", "data"))
     def update_fiche(sf):
+        sf = _default_sf(sf)
         banque_sel = sf.get("banque", "")
         an = sf["annee"]
         if not banque_sel:
@@ -873,6 +912,7 @@ def register_callbacks(app):
     # ── Evo banque ──
     @app.callback(Output("g-evo-banque", "figure"), Input("store-filters", "data"))
     def update_evo_banque(sf):
+        sf = _default_sf(sf)
         banque_sel = sf.get("banque", "")
         ind = sf["indicateur"]
         if not banque_sel:
@@ -897,6 +937,7 @@ def register_callbacks(app):
     # ── Rank banque ──
     @app.callback(Output("g-rank-banque", "figure"), Input("store-filters", "data"))
     def update_rank_banque(sf):
+        sf = _default_sf(sf)
         banque_sel = sf.get("banque", "")
         ind = sf["indicateur"]
         if not banque_sel or ind not in df_raw.columns:
@@ -926,22 +967,36 @@ def register_callbacks(app):
         return fig
 
 
-    # ── Download rapport ──
+    # ── Download rapport (cache 10 min pour téléchargement rapide si même banque/année) ──
+    _rapport_cache = {}
+    _rapport_cache_ttl = 600  # secondes
+
     def _gen_rapport(banque, annee):
         try:
             from .generate_rapport.convert_to_html import notebook_to_html
         except ImportError:
             from projet_positionnement_bank.generate_rapport.convert_to_html import notebook_to_html
+        import time
         b = (banque or "").strip() or None
         a = int(annee) if annee is not None else None
+        key = (b, a)
+        now = time.time()
+        if key in _rapport_cache:
+            cached_html, cached_at = _rapport_cache[key]
+            if now - cached_at < _rapport_cache_ttl:
+                return cached_html, f"_{b}" if b else ""
         if not os.path.isfile(RAPPORT_NOTEBOOK_PATH):
             raise FileNotFoundError(f"Notebook introuvable: {RAPPORT_NOTEBOOK_PATH}")
-        return notebook_to_html(RAPPORT_NOTEBOOK_PATH, banque=b, annee=a), f"_{b}" if b else ""
+        html_c = notebook_to_html(RAPPORT_NOTEBOOK_PATH, banque=b, annee=a)
+        suffix = f"_{b}" if b else ""
+        _rapport_cache[key] = (html_c, now)
+        return html_c, suffix
 
 
     toast_rapport_msg = html.Div([
         html.Div("🏦", className="bk-toast-icon"),
         html.Span("Veuillez sélectionner une banque.", className="bk-toast-line"),
+        html.Button("×", id="toast-report-close", className="bk-toast-close", title="Fermer", type="button"),
     ], className="bk-toast-body-inner")
 
     @app.callback(
@@ -949,12 +1004,16 @@ def register_callbacks(app):
         Output("toast-report", "is_open"),
         Output("toast-report", "children"),
         Input("quick-report-btn", "n_clicks"),
+        Input("toast-report-close", "n_clicks"),
         State("dd-banque", "value"),
         State("dd-annee", "value"),
         prevent_initial_call=True,
     )
-    def rapport_download(n_quick, banque, annee):
-        if not n_quick:
+    def rapport_download_and_close(n_quick, n_close, banque, annee):
+        triggered = ctx.triggered_id or ""
+        if triggered == "toast-report-close":
+            return no_update, False, no_update
+        if triggered != "quick-report-btn" or not n_quick:
             return no_update, no_update, no_update
         if not (banque and str(banque).strip()):
             return no_update, True, toast_rapport_msg
@@ -963,10 +1022,15 @@ def register_callbacks(app):
             payload = dict(content=html_c, filename=f"rapport_bancaire{suffix}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html")
             return payload, False, no_update
         except Exception as e:
+            err_msg = str(e).strip()
+            if "Kernel died" in err_msg or "kernel" in err_msg.lower() or "nbconvert" in err_msg or "nbclient" in err_msg:
+                user_msg = "La génération du rapport (notebook Jupyter) n'est pas disponible sur ce serveur. Exportez le rapport en local."
+            else:
+                user_msg = err_msg
             print(f"Erreur rapport: {e}")
             import traceback
             traceback.print_exc()
-            return no_update, True, [html.Strong("Erreur"), html.P(str(e), className="mb-0 mt-2 small")]
+            return no_update, True, [html.Strong("Rapport non disponible"), html.P(user_msg, className="mb-0 mt-2 small")]
 
 
 if __name__ == "__main__":

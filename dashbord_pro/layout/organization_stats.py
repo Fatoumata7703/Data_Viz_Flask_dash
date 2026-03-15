@@ -1,7 +1,7 @@
 """Statistiques pour la page Organisation"""
 from dash import html
-from layout.icons import create_icon_svg
-from utils import format_number
+from .icons import create_icon_svg
+from dashbord_pro.utils import format_number
 
 def create_organization_stats_cards(stats):
     """Crée les cartes de statistiques pour l'organisation"""

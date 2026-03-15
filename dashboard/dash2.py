@@ -72,7 +72,7 @@ def _load_assurance_data():
     if _cfg and getattr(_cfg, "MONGO_URI", "").strip() and "mongodb+srv" in getattr(_cfg, "MONGO_URI", ""):
         try:
             from pymongo import MongoClient
-            client = MongoClient(_cfg.MONGO_URI, serverSelectionTimeoutMS=5000)
+            client = MongoClient(_cfg.MONGO_URI, serverSelectionTimeoutMS=500, connectTimeoutMS=500)
             coll = client[_cfg.FLASH_DASH_DB][_cfg.ASSURANCE_COLLECTION]
             docs = list(coll.find({}))
             client.close()
@@ -87,7 +87,9 @@ def _load_assurance_data():
     return df
 
 
-def create_dash_app(server, url_base_pathname):
+def create_dash_app(server, url_base_pathname, requests_pathname_prefix=None):
+    if url_base_pathname and not url_base_pathname.startswith("/"):
+        url_base_pathname = "/" + url_base_pathname
     df = _load_assurance_data()
     df['date_derniere_sinistre'] = pd.to_datetime(df['date_derniere_sinistre'], errors='coerce')
     df['annee_sinistre'] = df['date_derniere_sinistre'].dt.year
@@ -97,11 +99,19 @@ def create_dash_app(server, url_base_pathname):
     df['ratio_sinistre_prime'] = np.where(df['montant_prime'] > 0,
                                            df['montant_sinistres'] / df['montant_prime'], 0)
 
-    app = dash.Dash(
-        __name__, server=server, url_base_pathname=url_base_pathname,
+    _assets_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
+    kwargs = dict(
+        server=server,
         external_stylesheets=[THEME],
         meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}],
+        assets_folder=_assets_dir,
     )
+    if requests_pathname_prefix is not None:
+        kwargs["routes_pathname_prefix"] = url_base_pathname
+        kwargs["requests_pathname_prefix"] = requests_pathname_prefix
+    else:
+        kwargs["url_base_pathname"] = url_base_pathname
+    app = dash.Dash(__name__, **kwargs)
     app.config.suppress_callback_exceptions = True
 
     types_assurance = sorted(df['type_assurance'].dropna().unique())
@@ -149,7 +159,7 @@ def create_dash_app(server, url_base_pathname):
                     dcc.Dropdown(id='f-age', options=[{'label': 'Toutes', 'value': 'Toutes'}] + [{'label': str(t), 'value': str(t)} for t in df['tranche_age'].dropna().unique()],
                                  value='Toutes', clearable=False, className="ins-dropdown"),
                 ], md=5, className="ins-filter-col"),
-            ], className="g-3 align-items-end"),
+            ], className="ins-filter-row"),
         ], className="ins-filter-body"),
     ], className="ins-filter-bar mb-4")
 

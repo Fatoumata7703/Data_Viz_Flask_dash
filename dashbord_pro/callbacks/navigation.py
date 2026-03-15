@@ -1,20 +1,42 @@
 """Callbacks pour la navigation entre les pages — préfixe /pro pour montage Flask"""
 from dash import Input, Output
-from layout.pages.home import create_home_page
-from layout.pages.organization import create_organization_page
-from layout.pages.pathology import create_pathology_page
-from layout.pages.patient import create_patient_page
-from layout.pages.treatment import create_treatment_page
-from layout.pages.risk import create_risk_page
-from layout.pages.analytics import create_analytics_page
+from dashbord_pro.layout.pages.home import create_home_page
+from dashbord_pro.layout.pages.organization import create_organization_page
+from dashbord_pro.layout.pages.pathology import create_pathology_page
+from dashbord_pro.layout.pages.patient import create_patient_page
+from dashbord_pro.layout.pages.treatment import create_treatment_page
+from dashbord_pro.layout.pages.risk import create_risk_page
+from dashbord_pro.layout.pages.analytics import create_analytics_page
 
 BASE = "/pro"
 
+def _n(p):
+    return (p or "").rstrip("/") or "/"
+
 def _is(pathname, *paths):
+    """Vrai si pathname correspond à l'un des paths. En ligne pathname peut être /data_viz/pro/..., /pro/... ou /profil."""
     if pathname is None:
         return False
-    pathname = pathname.rstrip("/") or "/"
-    return pathname in (p.rstrip("/") or "/" for p in paths)
+    pathname = _n(pathname)
+    # Chemins complets (ex. /data_viz/pro/organisation)
+    if pathname in (_n(p) for p in paths):
+        return True
+    # Variante sans préfixe (ex. /pro ou /pro/organisation)
+    short_base = "/pro"
+    for p in paths:
+        n = _n(p)
+        if n == BASE or n.startswith(BASE + "/"):
+            tail = n[len(BASE):] if len(n) > len(BASE) else "/"
+            short = _n(short_base + tail)
+            if pathname == short:
+                return True
+    # Dernier recours : pathname peut être juste le segment (ex. /profil, /organisation) en prod
+    for p in paths:
+        n = _n(p)
+        segment = n.split("/")[-1] if n != "/" else ""
+        if segment and (pathname == "/" + segment or pathname == segment):
+            return True
+    return False
 
 def register_navigation_callbacks(app, df):
     """Enregistre les callbacks de navigation"""

@@ -1,7 +1,7 @@
-"""Header principal"""
+"""Header principal — lien relatif pour rester sous /data_viz/pro/ en ligne"""
 from dash import html, dcc
 from datetime import datetime
-from layout.icons import create_icon_svg
+from .icons import create_icon_svg
 
 def create_main_header():
     """Crée le header principal avec design amélioré"""
@@ -18,7 +18,7 @@ def create_main_header():
             html.Div([
                 dcc.Link([
                     html.Div(create_icon_svg('virus', 24, color='#10b981'), className="pathology-icon")
-                ], href="/pathologies", className="pathology-link")
+                ], href="pathologies", className="pathology-link")
             ], className="header-right")
         ], className="main-header")
     ])

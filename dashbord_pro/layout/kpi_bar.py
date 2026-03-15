@@ -1,6 +1,6 @@
 """Barre horizontale de KPIs réutilisable sur les onglets."""
 from dash import html
-from layout.icons import create_icon_svg
+from .icons import create_icon_svg
 
 
 def create_kpi_bar(kpis, df):

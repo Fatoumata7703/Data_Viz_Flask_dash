@@ -43,7 +43,7 @@ def get_data():
     if not _MONGO_AVAILABLE:
         return None
     try:
-        client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=3000)
+        client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=500, connectTimeoutMS=500)
         db = client[MONGO_DB_NAME_PROD]
         coll = db[MONGO_COLLECTION_BANQUES_PROD]
         df = _load_from_collection(coll)

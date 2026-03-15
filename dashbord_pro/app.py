@@ -27,7 +27,9 @@ _APP_DIR = os.path.dirname(os.path.abspath(__file__))
 _ASSETS = os.path.join(_APP_DIR, 'assets')
 
 
-def create_dash_app(server=None, url_base_pathname='/pro/'):
+def create_dash_app(server=None, url_base_pathname='/pro/', requests_pathname_prefix=None):
+    if url_base_pathname and not url_base_pathname.startswith("/"):
+        url_base_pathname = "/" + url_base_pathname
     """
     Crée et retourne l'app Dash hospitalier.
     Si server est fourni (Flask), l'app est montée dessus à url_base_pathname.
@@ -41,20 +43,28 @@ def create_dash_app(server=None, url_base_pathname='/pro/'):
         external_stylesheets=external,
         suppress_callback_exceptions=True,
         assets_folder=_ASSETS,
-        url_base_pathname=url_base_pathname,
     )
+    if requests_pathname_prefix is not None:
+        kwargs["routes_pathname_prefix"] = url_base_pathname
+        kwargs["requests_pathname_prefix"] = requests_pathname_prefix
+    else:
+        kwargs["url_base_pathname"] = url_base_pathname
     if server is not None:
         kwargs["server"] = server
     app = dash.Dash(__name__, **kwargs)
-    base_path = (url_base_pathname or "/").rstrip("/")  # '/pro/' -> '/pro', '/' -> ''
+    # Préfixe complet pour les liens (ex. /data_viz/pro en prod) — évite 404 sur Organisation, Pathologies, etc.
+    base_path = (requests_pathname_prefix or url_base_pathname or "/").rstrip("/")  # '/data_viz/pro/' -> '/data_viz/pro'
     try:
         from .layout import sidebar
-        from .callbacks import navigation
+        from .layout import navigation as layout_nav
+        from .callbacks import navigation as callbacks_nav
     except ImportError:
         from layout import sidebar
-        from callbacks import navigation
+        from layout import navigation as layout_nav
+        from callbacks import navigation as callbacks_nav
     sidebar.BASE = base_path
-    navigation.BASE = base_path
+    layout_nav.BASE = base_path
+    callbacks_nav.BASE = base_path
     print("Chargement des données (dashboard pro)...")
     df = load_data()
     print(f"✓ {len(df)} patients chargés")

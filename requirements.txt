@@ -1,4 +1,8 @@
-# Projet positionnement bancaire - dépendances données + dashboard + rapport
+# Flash Dash - dépendances (app Flask + 4 dashboards Dash + MongoDB + rapports)
+# Utilisé en local et sur AlwaysData (pip install -r requirements.txt dans le venv)
+
+# Web
+flask>=2.0.0
 
 # Données
 pandas>=1.3.0
@@ -18,6 +22,8 @@ dash>=2.0.0
 plotly>=5.0.0
 dash-bootstrap-components>=1.3.0
 
-# Génération rapport (notebook -> HTML)
+# Génération rapport (notebook -> HTML, figures matplotlib, affichage riche)
 nbformat>=5.0.0
 nbconvert>=6.0.0
+matplotlib>=3.5.0
+ipython>=8.0.0

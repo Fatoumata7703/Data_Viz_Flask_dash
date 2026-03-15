@@ -1,3 +1,5 @@
+import base64
+import io
 import os
 import re
 import sys
@@ -6,6 +8,13 @@ from nbconvert import HTMLExporter
 from nbconvert.preprocessors import ExecutePreprocessor
 from datetime import datetime
 from .sommaire import add_toc
+
+# Backend non interactif pour capturer les figures en environnement sans affichage
+try:
+    import matplotlib
+    matplotlib.use("Agg")
+except Exception:
+    pass
 
 REPORT_HTML_HEADER = """<!DOCTYPE html>
 <html lang="fr">
@@ -293,14 +302,99 @@ REPORT_HTML_FOOTER = """
 """
 
 
+def _execute_notebook_inprocess(notebook, notebook_dir):
+    """
+    Exécute le notebook dans le processus courant (sans noyau Jupyter).
+    Utilisé en secours quand ExecutePreprocessor échoue (ex. environnement sans kernel).
+    """
+    saved_cwd = os.getcwd()
+    try:
+        if notebook_dir and os.path.isdir(notebook_dir):
+            os.chdir(notebook_dir)
+        if notebook_dir not in sys.path:
+            sys.path.insert(0, notebook_dir)
+        namespace = {
+            "__name__": "__main__",
+            "os": os,
+            "sys": sys,
+            "warnings": __import__("warnings"),
+        }
+        for cell in notebook.cells:
+            if cell.cell_type != "code":
+                continue
+            src = cell.get("source", "")
+            if isinstance(src, list):
+                src = "".join(src)
+            if not src.strip():
+                cell.outputs = []
+                continue
+            cell.outputs = []
+
+            def _display(x, _cell=cell):
+                """Injecte HTML dans les sorties de la cellule pour que le rapport rende comme en local."""
+                html_str = getattr(x, "_repr_html_", None)
+                if callable(html_str):
+                    html_str = html_str()
+                if html_str is None:
+                    html_str = str(x)
+                _cell.outputs.append(nbformat.v4.new_output("display_data", data={"text/html": html_str}))
+
+            namespace["display"] = _display
+            namespace["HTML"] = lambda s: s
+
+            # Capturer les figures matplotlib (plt.show) pour les inclure dans le rapport HTML
+            _plt = namespace.get("plt")
+            if _plt is not None:
+                def _show_capture(_cell=cell, _plt_mod=_plt):
+                    for fignum in list(_plt_mod.get_fignums()):
+                        fig = _plt_mod.figure(fignum)
+                        buf = io.BytesIO()
+                        fig.savefig(buf, format="png", bbox_inches="tight", dpi=100)
+                        buf.seek(0)
+                        b64 = base64.b64encode(buf.read()).decode("ascii")
+                        _cell.outputs.append(
+                            nbformat.v4.new_output("display_data", data={"image/png": b64})
+                        )
+                        _plt_mod.close(fig)
+                    # Ne pas appeler l'original show() pour éviter RecursionError
+
+                _plt.show = _show_capture
+
+            stdout_capture = io.StringIO()
+            stderr_capture = io.StringIO()
+            old_stdout, old_stderr = sys.stdout, sys.stderr
+            try:
+                sys.stdout = stdout_capture
+                sys.stderr = stderr_capture
+                exec(src, namespace)
+            except Exception as e:
+                stdout_capture.write(str(type(e).__name__) + ": " + str(e))
+            finally:
+                sys.stdout = old_stdout
+                sys.stderr = old_stderr
+            out_text = stdout_capture.getvalue()
+            err_text = stderr_capture.getvalue()
+            if out_text:
+                cell.outputs.append(nbformat.v4.new_output("stream", name="stdout", text=out_text))
+            if err_text:
+                cell.outputs.append(nbformat.v4.new_output("stream", name="stderr", text=err_text))
+    finally:
+        os.chdir(saved_cwd)
+    return notebook
+
+
 def _clean_notebook_outputs(notebook):
     for cell in notebook.cells:
         if cell.cell_type != "code" or not getattr(cell, "outputs", None):
             continue
         kept = []
         for out in cell.outputs:
-            if out.output_type == "stream" and getattr(out, "name", None) == "stderr":
-                continue
+            if out.output_type == "stream":
+                if getattr(out, "name", None) == "stderr":
+                    continue
+                text = getattr(out, "text", "") or ""
+                if "RecursionError" in text or "maximum recursion depth" in text:
+                    continue
             if out.output_type == "execute_result":
                 data = getattr(out, "data", {}) or {}
                 text = "".join(data.get("text/plain", []) or [])
@@ -347,6 +441,7 @@ def _clean_html_technical_output(html_str):
         re.compile(r"UserWarning|Setting bande|Rectangle\("),
         re.compile(r"Traceback \(most recent|File \".*\.py\""),
         re.compile(r"<Figure size \d+x\d+ with \d+ Axes>"),
+        re.compile(r"RecursionError|maximum recursion depth exceeded", re.IGNORECASE),
     ]
     for tag in list(soup.find_all(["pre", "div"])):
         if tag.find("img"):
@@ -399,8 +494,17 @@ def notebook_to_html(notebook_path, banque=None, annee=None):
     if annee is not None:
         notebook.cells.insert(idx, nbformat.v4.new_code_cell("annee_rapport = %s\n" % int(annee)))
 
-    executor = ExecutePreprocessor(timeout=-1)
-    executor.preprocess(notebook)
+    try:
+        executor = ExecutePreprocessor(timeout=120)
+        executor.preprocess(notebook)
+    except Exception as e:
+        err_msg = str(e).lower()
+        if "kernel" in err_msg or "died" in err_msg or "nbclient" in err_msg:
+            # Pas de noyau Jupyter sur AlwaysData : le kernel est lancé en sous-processus et échoue
+            # (Kernel died, limites du serveur WSGI). On exécute le notebook dans le processus courant.
+            _execute_notebook_inprocess(notebook, notebook_dir)
+        else:
+            raise
 
     _clean_notebook_outputs(notebook)
 

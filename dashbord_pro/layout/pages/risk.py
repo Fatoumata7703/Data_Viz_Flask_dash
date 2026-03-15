@@ -1,48 +1,29 @@
 """Page Patients à Risque"""
 import dash_bootstrap_components as dbc
 from dash import html
-from layout.filters import create_filters
-from layout.risk import create_risk_patients_section
-from layout.icons import create_icon_svg
+from ..filters import create_filters
+from ..risk import create_risk_patients_section
+from ..icons import create_icon_svg
+
+def _risk_card(icon, id_value, label, color):
+    """Carte : icône + chiffre sur une ligne, libellé en dessous."""
+    return html.Div([
+        html.Div(icon, className="risk-stat-icon", style={'background': color}),
+        html.Div([
+            html.Div(id=id_value, className="risk-stat-value"),
+            html.Div(label, className="risk-stat-label")
+        ], className="stat-card-body")
+    ], className="risk-stat-card", style={'--stat-color': color})
 
 def create_risk_stats_cards():
     """Crée les cartes de statistiques pour les patients à risque"""
     return html.Div([
-        html.Div([
-            html.Div(create_icon_svg('warning', 28, color='white'), className="risk-stat-icon", style={'background': '#f97316'}),
-            html.Div(id="risk-stat-total", className="risk-stat-value"),
-            html.Div("PATIENTS À RISQUE", className="risk-stat-label")
-        ], className="risk-stat-card", style={'--stat-color': '#f97316'}),
-        
-        html.Div([
-            html.Div(create_icon_svg('chart', 28, color='white'), className="risk-stat-icon", style={'background': '#ef4444'}),
-            html.Div(id="risk-stat-cout-moyen", className="risk-stat-value"),
-            html.Div("COÛT MOYEN", className="risk-stat-label")
-        ], className="risk-stat-card", style={'--stat-color': '#ef4444'}),
-        
-        html.Div([
-            html.Div(create_icon_svg('clock', 28, color='white'), className="risk-stat-icon", style={'background': '#f59e0b'}),
-            html.Div(id="risk-stat-duree-moyenne", className="risk-stat-value"),
-            html.Div("DURÉE MOYENNE", className="risk-stat-label")
-        ], className="risk-stat-card", style={'--stat-color': '#f59e0b'}),
-        
-        html.Div([
-            html.Div(create_icon_svg('chart', 28, color='white'), className="risk-stat-icon", style={'background': '#dc2626'}),
-            html.Div(id="risk-stat-cout-total", className="risk-stat-value"),
-            html.Div("COÛT TOTAL", className="risk-stat-label")
-        ], className="risk-stat-card", style={'--stat-color': '#dc2626'}),
-        
-        html.Div([
-            html.Div(create_icon_svg('chart', 28, color='white'), className="risk-stat-icon", style={'background': '#fbbf24'}),
-            html.Div(id="risk-stat-cout-jour", className="risk-stat-value"),
-            html.Div("COÛT/JOUR MOYEN", className="risk-stat-label")
-        ], className="risk-stat-card", style={'--stat-color': '#fbbf24'}),
-        
-        html.Div([
-            html.Div(create_icon_svg('user', 28, color='white'), className="risk-stat-icon", style={'background': '#ec4899'}),
-            html.Div(id="risk-stat-percentage", className="risk-stat-value"),
-            html.Div("% PATIENTS", className="risk-stat-label")
-        ], className="risk-stat-card", style={'--stat-color': '#ec4899'}),
+        _risk_card(create_icon_svg('warning', 28, color='white'), "risk-stat-total", "À RISQUE", '#f97316'),
+        _risk_card(create_icon_svg('chart', 28, color='white'), "risk-stat-cout-moyen", "COÛT MOY.", '#ef4444'),
+        _risk_card(create_icon_svg('clock', 28, color='white'), "risk-stat-duree-moyenne", "DURÉE MOY.", '#f59e0b'),
+        _risk_card(create_icon_svg('chart', 28, color='white'), "risk-stat-cout-total", "COÛT TOTAL", '#dc2626'),
+        _risk_card(create_icon_svg('chart', 28, color='white'), "risk-stat-cout-jour", "COÛT/JOUR", '#fbbf24'),
+        _risk_card(create_icon_svg('user', 28, color='white'), "risk-stat-percentage", "% PATIENTS", '#ec4899'),
     ], className="risk-stats-grid", id="risk-stats-grid")
 
 def create_risk_page(df):

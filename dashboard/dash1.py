@@ -64,8 +64,9 @@ def _graph_layout(**kwargs):
     base.update(kwargs)
     return base
 
-GRAPH_CFG = {"responsive": True, "displayModeBar": False}
-GRAPH_CFG_STATIC = {"responsive": False, "displayModeBar": False, "staticPlot": False}
+# scrollZoom: False → molette = défilement page (pas de blocage). doubleClick: False → pas de zoom au double-clic.
+GRAPH_CFG = {"responsive": True, "displayModeBar": False, "scrollZoom": False, "doubleClick": False}
+GRAPH_CFG_STATIC = {"responsive": False, "displayModeBar": False, "staticPlot": False, "scrollZoom": False, "doubleClick": False}
 
 _AXIS = dict(gridcolor="rgba(232,220,200,0.45)", gridwidth=1,
              zerolinecolor="rgba(232,220,200,0.55)", zerolinewidth=1,
@@ -81,7 +82,12 @@ def load_solar_data():
     if _cfg and getattr(_cfg, "MONGO_URI", "").strip() and "mongodb+srv" in getattr(_cfg, "MONGO_URI", ""):
         try:
             from pymongo import MongoClient
-            client = MongoClient(_cfg.MONGO_URI, serverSelectionTimeoutMS=5000)
+            client = MongoClient(
+                _cfg.MONGO_URI,
+                serverSelectionTimeoutMS=500,
+                connectTimeoutMS=500,
+                socketTimeoutMS=3000,
+            )
             coll = client[_cfg.FLASH_DASH_DB][_cfg.SOLAR_COLLECTION]
             docs = list(coll.find({}))
             client.close()
@@ -95,8 +101,11 @@ def load_solar_data():
         try:
             data_dir = os.path.join(_root, "data")
             df = pd.read_csv(os.path.join(data_dir, "solar_data.csv"), sep=';')
-        except FileNotFoundError:
-            df = pd.read_csv(os.path.join(_root, "data", "salar_data.csv"), sep=';')
+        except Exception:
+            try:
+                df = pd.read_csv(os.path.join(_root, "data", "salar_data.csv"), sep=';')
+            except Exception:
+                df = pd.DataFrame()
     if 'Time' in df.columns and 'Hour' not in df.columns:
         df['Hour'] = df['Time']
     df['DateTime'] = pd.to_datetime(df['DateTime'], format='%d/%m/%Y %H:%M', errors='coerce')
@@ -111,22 +120,29 @@ def load_solar_data():
     return df
 
 
-def create_dash_app(server, url_base_pathname):
+def create_dash_app(server, url_base_pathname, requests_pathname_prefix=None):
+    if url_base_pathname and not url_base_pathname.startswith("/"):
+        url_base_pathname = "/" + url_base_pathname
     df = load_solar_data()
     date_min = df['Date'].min()
     date_max = df['Date'].max()
     date_min_str = pd.Timestamp(date_min).strftime('%Y-%m-%d') if pd.notna(date_min) else None
     date_max_str = pd.Timestamp(date_max).strftime('%Y-%m-%d') if pd.notna(date_max) else None
 
-    app = dash.Dash(
-        __name__,
+    _assets_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
+    kwargs = dict(
         server=server,
-        url_base_pathname=url_base_pathname,
         external_stylesheets=[THEME],
         meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}],
+        assets_folder=_assets_dir,
     )
+    if requests_pathname_prefix is not None:
+        kwargs["routes_pathname_prefix"] = url_base_pathname
+        kwargs["requests_pathname_prefix"] = requests_pathname_prefix
+    else:
+        kwargs["url_base_pathname"] = url_base_pathname
+    app = dash.Dash(__name__, **kwargs)
 
-    # Filtres appliqués (mis à jour par présets ou bouton Appliquer) — source de vérité pour tous les callbacks
     applied_default = {'start': date_min_str, 'end': date_max_str, 'site': None}
     app.config.suppress_callback_exceptions = True
     sites = [{'label': 'Tous les sites', 'value': None}]
@@ -137,7 +153,6 @@ def create_dash_app(server, url_base_pathname):
     filter_card = dbc.Card([
         dbc.CardBody([
             dbc.Row([
-                # Icône + Filtres rapides
                 dbc.Col([
                     html.Div([
                         html.Span("🔍", style={"fontSize": "1.1rem", "marginRight": "6px"}),
@@ -151,28 +166,23 @@ def create_dash_app(server, url_base_pathname):
                         dbc.Button("Tout", id="preset-all", size="sm", className="solar-pill-btn"),
                     ], className="d-flex flex-wrap"),
                 ], md=4, className="d-flex flex-column justify-content-center"),
-                # Du
                 dbc.Col([
                     html.Div("📅 Du", style={"fontWeight": "600", "fontSize": "0.75rem", "color": SOLAR_TEXT_MUTED, "marginBottom": "4px"}),
                     dcc.DatePickerSingle(id='date-start', date=date_min_str, display_format='DD/MM/YYYY', className="solar-date-single"),
                 ], md=2, className="d-flex flex-column justify-content-center"),
-                # Au
                 dbc.Col([
                     html.Div("📅 Au", style={"fontWeight": "600", "fontSize": "0.75rem", "color": SOLAR_TEXT_MUTED, "marginBottom": "4px"}),
                     dcc.DatePickerSingle(id='date-end', date=date_max_str, display_format='DD/MM/YYYY', className="solar-date-single"),
                 ], md=2, className="d-flex flex-column justify-content-center"),
-                # Site
                 dbc.Col([
                     html.Div("📍 Site", style={"fontWeight": "600", "fontSize": "0.75rem", "color": SOLAR_TEXT_MUTED, "marginBottom": "4px"}),
                     dcc.Dropdown(id='filter-site', options=sites, value=None, clearable=False, placeholder="Tous les sites", className="solar-dropdown"),
                 ], md=3, className="d-flex flex-column justify-content-center"),
-            ], className="g-3 align-items-end"),
+            ], className="solar-filter-row"),
         ], className="py-3 px-4"),
     ], className="solar-filter-bar mb-4")
-    # Bouton caché pour garder la compatibilité
     hidden_apply = html.Button(id="btn-apply-filters", n_clicks=0, style={"display": "none"})
 
-    # —— KPIs : jolies blocs — fond blanc, bordure gauche épaisse arrondie, ombre légère ——
     def kpi_card(icon, title, id_value, border_color, bg_tint):
         return dbc.Col(
             dbc.Card([
@@ -346,6 +356,7 @@ def create_dash_app(server, url_base_pathname):
     app.layout = dbc.Container([
         header,
         dcc.Store(id='applied-filters', data=applied_default),
+        dcc.Store(id='active-page', data='overview'),
         dcc.Download(id="download-pdf"),
         html.Div(id="pdf-print-trigger", style={"display": "none"}),
         hidden_apply,
@@ -357,8 +368,37 @@ def create_dash_app(server, url_base_pathname):
         ]),
     ], fluid=True, className="py-4", style={"backgroundColor": SOLAR_CREAM, "minHeight": "100vh", "fontFamily": "Segoe UI, system-ui, sans-serif"})
 
-    # —— Sidebar : clic -> afficher/masquer les pages + surligner le bouton actif ——
+    # —— Clic nav -> mettre à jour la page active (pour charger les graphiques à la demande) ——
     @app.callback(
+        Output('active-page', 'data'),
+        [Input('nav-overview', 'n_clicks'), Input('nav-performance', 'n_clicks'),
+         Input('nav-environment', 'n_clicks'), Input('nav-anomalies', 'n_clicks'),
+         Input('nav-advanced', 'n_clicks')],
+        prevent_initial_call=True,
+    )
+    def set_active_page(n_o, n_p, n_e, n_a, n_adv):
+        from dash import ctx
+        tid = ctx.triggered_id or 'nav-overview'
+        return tid.replace('nav-', '')
+
+    # —— Sidebar : clic -> afficher/masquer les pages (clientside = instantané, pas d'aller-retour serveur) ——
+    app.clientside_callback(
+        """
+        function(n_o, n_p, n_e, n_a, n_adv) {
+            var tid = dash_clientside.callback_context.triggered_id;
+            var map = {'nav-overview': 0, 'nav-performance': 1, 'nav-environment': 2, 'nav-anomalies': 3, 'nav-advanced': 4};
+            var idx = (tid && map[tid] !== undefined) ? map[tid] : 0;
+            var show = {display: 'block'};
+            var hide = {display: 'none'};
+            var styles = [hide, hide, hide, hide, hide];
+            styles[idx] = show;
+            var base = 'solar-sidebar-btn';
+            var active = 'solar-sidebar-btn solar-sidebar-btn-active';
+            var classes = [base, base, base, base, base];
+            classes[idx] = active;
+            return styles.concat(classes);
+        }
+        """,
         [Output('page-overview', 'style'), Output('page-performance', 'style'),
          Output('page-environment', 'style'), Output('page-anomalies', 'style'),
          Output('page-advanced', 'style'),
@@ -369,18 +409,6 @@ def create_dash_app(server, url_base_pathname):
          Input('nav-environment', 'n_clicks'), Input('nav-anomalies', 'n_clicks'),
          Input('nav-advanced', 'n_clicks')],
     )
-    def switch_page(n_o, n_p, n_e, n_a, n_adv):
-        from dash import ctx
-        pages = ['overview', 'performance', 'environment', 'anomalies', 'advanced']
-        nav_map = {'nav-overview': 0, 'nav-performance': 1, 'nav-environment': 2, 'nav-anomalies': 3, 'nav-advanced': 4}
-        active_idx = nav_map.get(ctx.triggered_id, 0)
-        show = {"display": "block"}
-        hide = {"display": "none"}
-        styles = [show if i == active_idx else hide for i in range(5)]
-        base = "solar-sidebar-btn"
-        active_cls = "solar-sidebar-btn solar-sidebar-btn-active"
-        classes = [active_cls if i == active_idx else base for i in range(5)]
-        return *styles, *classes
 
     # —— Filtres automatiques : tout changement met à jour immédiatement ——
     @app.callback(
@@ -412,13 +440,23 @@ def create_dash_app(server, url_base_pathname):
         e = end_d or date_max_str
         return s, e, {'start': s, 'end': e, 'site': site}
 
+    # Cache du dataframe filtré : un seul filtrage par changement (réaction directe comme dash2)
+    _fd_cache_key = (None, None, None)
+    _fd_cache = None
+
     def _filter_df(start_date, end_date, site=None):
+        nonlocal _fd_cache_key, _fd_cache
+        key = (start_date, end_date, site)
+        if key == _fd_cache_key and _fd_cache is not None:
+            return _fd_cache
         out = df.copy()
         if start_date and end_date:
             out = out[(out['Date'] >= start_date) & (out['Date'] <= end_date)]
         if site and 'Country' in out.columns:
             out = out[out['Country'].astype(str) == str(site)]
-        return out.copy()
+        _fd_cache_key = key
+        _fd_cache = out.copy()
+        return _fd_cache
 
     # —— Export Excel (données filtrées) ——
     @app.callback(
@@ -444,14 +482,16 @@ def create_dash_app(server, url_base_pathname):
         Input('btn-export-pdf', 'n_clicks'),
     )
 
-    # —— KPIs ——
+    # —— KPIs (Overview uniquement au chargement) ——
     @app.callback(
         [Output('total-ac-power', 'children'), Output('total-dc-power', 'children'),
          Output('efficiency-ac-dc', 'children'), Output('avg-hourly-power', 'children'),
          Output('anomaly-pct', 'children'), Output('temp-module-kpi', 'children')],
-        Input('applied-filters', 'data'),
+        [Input('applied-filters', 'data'), Input('active-page', 'data')],
     )
-    def update_stats(applied_filters):
+    def update_stats(applied_filters, active_page):
+        if active_page and active_page != 'overview':
+            return (dash.no_update,) * 6
         applied_filters = applied_filters or applied_default
         fd = _filter_df(applied_filters['start'], applied_filters['end'], applied_filters.get('site'))
         total_ac = fd['AC_Power'].sum()
@@ -475,12 +515,14 @@ def create_dash_app(server, url_base_pathname):
             temp_str,
         )
 
-    # —— Production horaire ——
+    # —— Production horaire (Overview) ——
     @app.callback(
         Output('hourly-production-graph', 'figure'),
-        Input('applied-filters', 'data'),
+        [Input('applied-filters', 'data'), Input('active-page', 'data')],
     )
-    def update_hourly(applied_filters):
+    def update_hourly(applied_filters, active_page):
+        if active_page and active_page != 'overview':
+            return dash.no_update
         applied_filters = applied_filters or applied_default
         fd = _filter_df(applied_filters['start'], applied_filters['end'], applied_filters.get('site')).sort_values('DateTime')
         fig = go.Figure()
@@ -489,12 +531,14 @@ def create_dash_app(server, url_base_pathname):
         fig.update_layout(**_graph_layout(), height=380, hovermode='x unified', xaxis_title="Date et heure", yaxis_title="Production (kW)", xaxis=_XAXIS, yaxis=_YAXIS)
         return fig
 
-    # —— Production journalière ——
+    # —— Production journalière (Overview) ——
     @app.callback(
         Output('daily-production-graph', 'figure'),
-        Input('applied-filters', 'data'),
+        [Input('applied-filters', 'data'), Input('active-page', 'data')],
     )
-    def update_daily(applied_filters):
+    def update_daily(applied_filters, active_page):
+        if active_page and active_page != 'overview':
+            return dash.no_update
         applied_filters = applied_filters or applied_default
         fd = _filter_df(applied_filters['start'], applied_filters['end'], applied_filters.get('site'))
         if 'Daily_Yield' in fd.columns:
@@ -525,16 +569,23 @@ def create_dash_app(server, url_base_pathname):
         fig.update_layout(**_graph_layout(), height=380, hovermode='x unified', xaxis_title="Date et heure", yaxis_title=ylabel, xaxis=_XAXIS, yaxis=_YAXIS)
         return fig
 
-    @app.callback(Output('overview-cumulative-graph', 'figure'), Input('applied-filters', 'data'))
-    def update_overview_cumulative(applied_filters):
+    @app.callback(
+        Output('overview-cumulative-graph', 'figure'),
+        [Input('applied-filters', 'data'), Input('active-page', 'data')],
+    )
+    def update_overview_cumulative(applied_filters, active_page):
+        if active_page and active_page != 'overview':
+            return dash.no_update
         return _make_cumulative_fig(applied_filters)
 
     # —— Courbe efficacité dans le temps (Overview) ——
     @app.callback(
         Output('overview-efficiency-graph', 'figure'),
-        Input('applied-filters', 'data'),
+        [Input('applied-filters', 'data'), Input('active-page', 'data')],
     )
-    def update_overview_efficiency(applied_filters):
+    def update_overview_efficiency(applied_filters, active_page):
+        if active_page and active_page != 'overview':
+            return dash.no_update
         applied_filters = applied_filters or applied_default
         fd = _filter_df(applied_filters['start'], applied_filters['end'], applied_filters.get('site')).sort_values('DateTime')
         if 'Efficiency' not in fd.columns:
@@ -547,12 +598,14 @@ def create_dash_app(server, url_base_pathname):
         fig.update_layout(**_graph_layout(), height=380, hovermode='x unified', xaxis_title="Date et heure", yaxis_title="Efficiency (%)", xaxis=_XAXIS, yaxis=_YAXIS)
         return fig
 
-    # —— Bloc IA Insights (résumé auto) ——
+    # —— Bloc IA Insights (Overview) ——
     @app.callback(
         Output('ia-insights-block', 'children'),
-        Input('applied-filters', 'data'),
+        [Input('applied-filters', 'data'), Input('active-page', 'data')],
     )
-    def update_ia_insights(applied_filters):
+    def update_ia_insights(applied_filters, active_page):
+        if active_page and active_page != 'overview':
+            return dash.no_update
         applied_filters = applied_filters or applied_default
         fd = _filter_df(applied_filters['start'], applied_filters['end'], applied_filters.get('site'))
         total_ac = fd['AC_Power'].sum()
@@ -593,9 +646,12 @@ def create_dash_app(server, url_base_pathname):
     # —— PAGE 2 — Efficacité avec seuil 90 % ——
     @app.callback(
         Output('perf-efficiency-graph', 'figure'),
-        Input('applied-filters', 'data'),
+        [Input('applied-filters', 'data'), Input('active-page', 'data')],
+        prevent_initial_call=True,
     )
-    def update_perf_efficiency(applied_filters):
+    def update_perf_efficiency(applied_filters, active_page):
+        if active_page != 'performance':
+            return dash.no_update
         applied_filters = applied_filters or applied_default
         fd = _filter_df(applied_filters['start'], applied_filters['end'], applied_filters.get('site')).sort_values('DateTime')
         if 'Efficiency' not in fd.columns:
@@ -611,9 +667,12 @@ def create_dash_app(server, url_base_pathname):
     # —— PAGE 2 — Stats + histogramme efficacité ——
     @app.callback(
         [Output('perf-efficiency-stats', 'children'), Output('perf-efficiency-histogram', 'figure')],
-        Input('applied-filters', 'data'),
+        [Input('applied-filters', 'data'), Input('active-page', 'data')],
+        prevent_initial_call=True,
     )
-    def update_perf_histogram(applied_filters):
+    def update_perf_histogram(applied_filters, active_page):
+        if active_page != 'performance':
+            return dash.no_update, dash.no_update
         applied_filters = applied_filters or applied_default
         fd = _filter_df(applied_filters['start'], applied_filters['end'], applied_filters.get('site'))
         if 'Efficiency' not in fd.columns:
@@ -629,12 +688,15 @@ def create_dash_app(server, url_base_pathname):
         fig.update_layout(**_graph_layout(), height=300, autosize=False, xaxis_title="Efficiency (%)", yaxis_title="Effectif", xaxis=_XAXIS, yaxis=_YAXIS, bargap=0.05)
         return stats, fig
 
-    # —— PAGE 2 — Bar chart rendement par jour, Top 5 / Pire 5 ——
+    # —— PAGE 2 — Bar chart rendement par jour ——
     @app.callback(
         Output('perf-daily-bar-graph', 'figure'),
-        Input('applied-filters', 'data'),
+        [Input('applied-filters', 'data'), Input('active-page', 'data')],
+        prevent_initial_call=True,
     )
-    def update_perf_daily_bar(applied_filters):
+    def update_perf_daily_bar(applied_filters, active_page):
+        if active_page != 'performance':
+            return dash.no_update
         applied_filters = applied_filters or applied_default
         fd = _filter_df(applied_filters['start'], applied_filters['end'], applied_filters.get('site'))
         if 'Efficiency' not in fd.columns:
@@ -652,9 +714,12 @@ def create_dash_app(server, url_base_pathname):
     # —— PAGE 2 — Rolling 7j et 30j ——
     @app.callback(
         Output('perf-rolling-graph', 'figure'),
-        Input('applied-filters', 'data'),
+        [Input('applied-filters', 'data'), Input('active-page', 'data')],
+        prevent_initial_call=True,
     )
-    def update_perf_rolling(applied_filters):
+    def update_perf_rolling(applied_filters, active_page):
+        if active_page != 'performance':
+            return dash.no_update
         applied_filters = applied_filters or applied_default
         fd = _filter_df(applied_filters['start'], applied_filters['end'], applied_filters.get('site')).sort_values('DateTime')
         if 'Efficiency' not in fd.columns or len(fd) < 7:
@@ -672,9 +737,12 @@ def create_dash_app(server, url_base_pathname):
     # —— PAGE 2 — Comparaison périodes ——
     @app.callback(
         Output('perf-comparison-block', 'children'),
-        Input('applied-filters', 'data'),
+        [Input('applied-filters', 'data'), Input('active-page', 'data')],
+        prevent_initial_call=True,
     )
-    def update_perf_comparison(applied_filters):
+    def update_perf_comparison(applied_filters, active_page):
+        if active_page != 'performance':
+            return dash.no_update
         applied_filters = applied_filters or applied_default
         start, end = applied_filters.get('start'), applied_filters.get('end')
         fd = _filter_df(start, end, applied_filters.get('site'))
@@ -703,12 +771,15 @@ def create_dash_app(server, url_base_pathname):
             ], style={"padding": "10px 18px"}),
         ])
 
-    # —— Heatmap (utilisé en Page 3 Environnement) ——
+    # —— Heatmap (Page 3 Environnement) ——
     @app.callback(
         Output('heatmap-irradiation-production', 'figure'),
-        Input('applied-filters', 'data'),
+        [Input('applied-filters', 'data'), Input('active-page', 'data')],
+        prevent_initial_call=True,
     )
-    def update_heatmap(applied_filters):
+    def update_heatmap(applied_filters, active_page):
+        if active_page != 'environment':
+            return dash.no_update
         applied_filters = applied_filters or applied_default
         fd = _filter_df(applied_filters['start'], applied_filters['end'], applied_filters.get('site'))
         fd['Hour'] = pd.to_numeric(fd.get('Hour', fd.get('Time', 0)), errors='coerce')
@@ -717,12 +788,15 @@ def create_dash_app(server, url_base_pathname):
         fig.update_layout(**_graph_layout(), height=420, autosize=False, xaxis_title="Heure", yaxis_title="Date", xaxis={**_XAXIS, "dtick": 1}, yaxis=_YAXIS)
         return fig
 
-    # —— Température module vs production + tendance + corrélation r ——
+    # —— Température module vs production (Environnement) ——
     @app.callback(
         [Output('env-correlation-r', 'children'), Output('temp-vs-production-graph', 'figure')],
-        Input('applied-filters', 'data'),
+        [Input('applied-filters', 'data'), Input('active-page', 'data')],
+        prevent_initial_call=True,
     )
-    def update_temp(applied_filters):
+    def update_temp(applied_filters, active_page):
+        if active_page != 'environment':
+            return dash.no_update, dash.no_update
         applied_filters = applied_filters or applied_default
         fd = _filter_df(applied_filters['start'], applied_filters['end'], applied_filters.get('site'))
         if 'Module_Temperature' not in fd.columns:
@@ -742,12 +816,15 @@ def create_dash_app(server, url_base_pathname):
         badge = html.Span(f"r = {r:.3f}", style={"background": f"rgba({int(r_color[1:3],16)},{int(r_color[3:5],16)},{int(r_color[5:7],16)},0.1)", "color": r_color, "fontWeight": "800", "padding": "4px 12px", "borderRadius": "6px", "fontSize": "0.85rem"})
         return html.Div(["Corrélation Pearson : ", badge], className="mb-2", style={"fontSize": "0.82rem", "color": SOLAR_TEXT_MUTED}), fig
 
-    # —— Température ambiante vs Efficacité + zone optimale ——
+    # —— Température ambiante vs Efficacité (Environnement) ——
     @app.callback(
         Output('env-ambient-vs-efficiency-graph', 'figure'),
-        Input('applied-filters', 'data'),
+        [Input('applied-filters', 'data'), Input('active-page', 'data')],
+        prevent_initial_call=True,
     )
-    def update_ambient_vs_efficiency(applied_filters):
+    def update_ambient_vs_efficiency(applied_filters, active_page):
+        if active_page != 'environment':
+            return dash.no_update
         applied_filters = applied_filters or applied_default
         fd = _filter_df(applied_filters['start'], applied_filters['end'], applied_filters.get('site'))
         if 'Ambient_Temperature' not in fd.columns or 'Efficiency' not in fd.columns:
@@ -775,12 +852,15 @@ def create_dash_app(server, url_base_pathname):
         fig.update_layout(**_graph_layout(), height=380, autosize=False, xaxis_title="Plage de température", yaxis_title="Production AC (kW)", xaxis=_XAXIS, yaxis=_YAXIS, bargap=0.3)
         return fig
 
-    # —— Irradiation vs Production + corrélation ——
+    # —— Irradiation vs Production (Environnement) ——
     @app.callback(
         [Output('env-irradiation-corr', 'children'), Output('env-irradiation-graph', 'figure')],
-        Input('applied-filters', 'data'),
+        [Input('applied-filters', 'data'), Input('active-page', 'data')],
+        prevent_initial_call=True,
     )
-    def update_irradiation(applied_filters):
+    def update_irradiation(applied_filters, active_page):
+        if active_page != 'environment':
+            return dash.no_update, dash.no_update
         applied_filters = applied_filters or applied_default
         fd = _filter_df(applied_filters['start'], applied_filters['end'], applied_filters.get('site'))
         if 'Irradiation' not in fd.columns:
@@ -794,14 +874,18 @@ def create_dash_app(server, url_base_pathname):
         badge = html.Span(f"r = {r:.3f}", style={"background": f"rgba({int(r_c[1:3],16)},{int(r_c[3:5],16)},{int(r_c[5:7],16)},0.1)", "color": r_c, "fontWeight": "800", "padding": "4px 12px", "borderRadius": "6px", "fontSize": "0.85rem"})
         return html.Div(["Corrélation Irradiation / Production : ", badge], className="mb-2", style={"fontSize": "0.82rem", "color": SOLAR_TEXT_MUTED}), fig
 
-    # —— Pattern horaire moyen ——
+    # —— Pattern horaire moyen (Performance) ——
     @app.callback(
         Output('avg-hourly-pattern-graph', 'figure'),
-        Input('applied-filters', 'data'),
+        [Input('applied-filters', 'data'), Input('active-page', 'data')],
+        prevent_initial_call=True,
     )
-    def update_avg_hourly(applied_filters):
+    def update_avg_hourly(applied_filters, active_page):
+        if active_page != 'performance':
+            return dash.no_update
         applied_filters = applied_filters or applied_default
         fd = _filter_df(applied_filters['start'], applied_filters['end'], applied_filters.get('site'))
+        fd['Hour'] = pd.to_numeric(fd.get('Hour', fd.get('Time', 0)), errors='coerce')
         hourly = fd.groupby('Hour').agg({'AC_Power': 'mean', 'DC_Power': 'mean'}).reset_index()
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=hourly['Hour'], y=hourly['AC_Power'], mode='lines+markers', name='AC moy.', line=dict(color=GRAPH_PRIMARY, width=2.5, shape='spline'), marker=dict(size=6, color=GRAPH_PRIMARY, line=dict(width=2, color='white')), fill='tozeroy', fillcolor='rgba(234,88,12,0.08)'))
@@ -812,9 +896,12 @@ def create_dash_app(server, url_base_pathname):
     # —— PAGE 4 — Anomalies : KPI ——
     @app.callback(
         [Output('anom-pct-nulle', 'children'), Output('anom-nb-incidents', 'children'), Output('anom-duree-moy', 'children'), Output('anom-max-panne', 'children')],
-        Input('applied-filters', 'data'),
+        [Input('applied-filters', 'data'), Input('active-page', 'data')],
+        prevent_initial_call=True,
     )
-    def update_anom_kpi(applied_filters):
+    def update_anom_kpi(applied_filters, active_page):
+        if active_page != 'anomalies':
+            return dash.no_update, dash.no_update, dash.no_update, dash.no_update
         applied_filters = applied_filters or applied_default
         fd = _filter_df(applied_filters['start'], applied_filters['end'], applied_filters.get('site'))
         fd = fd.copy()
@@ -834,12 +921,15 @@ def create_dash_app(server, url_base_pathname):
         duree_max = float(incidents.max()) if len(incidents) else 0
         return f"{pct_nulle:.1f} %", str(nb_incidents), f"{duree_moy:.1f}", f"{duree_max:.0f}"
 
-    # —— PAGE 4 — Production nulle en journée (8h–18h) ——
+    # —— PAGE 4 — Production nulle en journée ——
     @app.callback(
         Output('anom-nulle-journee-graph', 'figure'),
-        Input('applied-filters', 'data'),
+        [Input('applied-filters', 'data'), Input('active-page', 'data')],
+        prevent_initial_call=True,
     )
-    def update_anom_nulle_journee(applied_filters):
+    def update_anom_nulle_journee(applied_filters, active_page):
+        if active_page != 'anomalies':
+            return dash.no_update
         applied_filters = applied_filters or applied_default
         fd = _filter_df(applied_filters['start'], applied_filters['end'], applied_filters.get('site')).sort_values('DateTime')
         fd = fd.copy()
@@ -856,9 +946,12 @@ def create_dash_app(server, url_base_pathname):
     # —— PAGE 4 — Efficacité < 80 % ——
     @app.callback(
         Output('anom-efficiency-graph', 'figure'),
-        Input('applied-filters', 'data'),
+        [Input('applied-filters', 'data'), Input('active-page', 'data')],
+        prevent_initial_call=True,
     )
-    def update_anom_efficiency(applied_filters):
+    def update_anom_efficiency(applied_filters, active_page):
+        if active_page != 'anomalies':
+            return dash.no_update
         applied_filters = applied_filters or applied_default
         fd = _filter_df(applied_filters['start'], applied_filters['end'], applied_filters.get('site')).sort_values('DateTime')
         if 'Efficiency' not in fd.columns:
@@ -878,9 +971,12 @@ def create_dash_app(server, url_base_pathname):
     # —— PAGE 4 — Tableau incidents ——
     @app.callback(
         Output('anom-table-incidents', 'children'),
-        Input('applied-filters', 'data'),
+        [Input('applied-filters', 'data'), Input('active-page', 'data')],
+        prevent_initial_call=True,
     )
-    def update_anom_table(applied_filters):
+    def update_anom_table(applied_filters, active_page):
+        if active_page != 'anomalies':
+            return dash.no_update
         applied_filters = applied_filters or applied_default
         fd = _filter_df(applied_filters['start'], applied_filters['end'], applied_filters.get('site'))
         fd = fd.copy()
@@ -910,9 +1006,12 @@ def create_dash_app(server, url_base_pathname):
     # —— PAGE 4 — Anomalies par mois ——
     @app.callback(
         Output('anom-by-month-graph', 'figure'),
-        Input('applied-filters', 'data'),
+        [Input('applied-filters', 'data'), Input('active-page', 'data')],
+        prevent_initial_call=True,
     )
-    def update_anom_by_month(applied_filters):
+    def update_anom_by_month(applied_filters, active_page):
+        if active_page != 'anomalies':
+            return dash.no_update
         applied_filters = applied_filters or applied_default
         fd = _filter_df(applied_filters['start'], applied_filters['end'], applied_filters.get('site'))
         fd = fd.copy()
@@ -925,12 +1024,15 @@ def create_dash_app(server, url_base_pathname):
         fig.update_layout(**_graph_layout(), height=380, xaxis_title="Mois", yaxis_title="Nb anomalies", xaxis=_XAXIS, yaxis=_YAXIS, bargap=0.25)
         return fig
 
-    # —— PAGE 5 — Prévision (moyenne mobile + projection 30j) ——
+    # —— PAGE 5 — Prévision ——
     @app.callback(
         Output('adv-forecast-graph', 'figure'),
-        Input('applied-filters', 'data'),
+        [Input('applied-filters', 'data'), Input('active-page', 'data')],
+        prevent_initial_call=True,
     )
-    def update_adv_forecast(applied_filters):
+    def update_adv_forecast(applied_filters, active_page):
+        if active_page != 'advanced':
+            return dash.no_update
         applied_filters = applied_filters or applied_default
         fd = _filter_df(applied_filters['start'], applied_filters['end'], applied_filters.get('site')).sort_values('DateTime')
         daily = fd.groupby('Date')['AC_Power'].sum().reset_index()
@@ -971,9 +1073,12 @@ def create_dash_app(server, url_base_pathname):
     # —— PAGE 5 — Outliers IQR ——
     @app.callback(
         Output('adv-outliers-graph', 'figure'),
-        Input('applied-filters', 'data'),
+        [Input('applied-filters', 'data'), Input('active-page', 'data')],
+        prevent_initial_call=True,
     )
-    def update_adv_outliers(applied_filters):
+    def update_adv_outliers(applied_filters, active_page):
+        if active_page != 'advanced':
+            return dash.no_update
         applied_filters = applied_filters or applied_default
         fd = _filter_df(applied_filters['start'], applied_filters['end'], applied_filters.get('site'))
         if 'Efficiency' not in fd.columns:
@@ -995,12 +1100,15 @@ def create_dash_app(server, url_base_pathname):
         fig.update_layout(**_graph_layout(), height=380, xaxis_title="Date et heure", yaxis_title="Efficiency (%)", xaxis=_XAXIS, yaxis=_YAXIS)
         return fig
 
-    # —— PAGE 5 — Décomposition (trend = MA, résidu, saisonnalité par heure) ——
+    # —— PAGE 5 — Décomposition ——
     @app.callback(
         Output('adv-decomposition-graph', 'figure'),
-        Input('applied-filters', 'data'),
+        [Input('applied-filters', 'data'), Input('active-page', 'data')],
+        prevent_initial_call=True,
     )
-    def update_adv_decomposition(applied_filters):
+    def update_adv_decomposition(applied_filters, active_page):
+        if active_page != 'advanced':
+            return dash.no_update
         applied_filters = applied_filters or applied_default
         fd = _filter_df(applied_filters['start'], applied_filters['end'], applied_filters.get('site')).sort_values('DateTime')
         if len(fd) < 24:
@@ -1030,9 +1138,12 @@ def create_dash_app(server, url_base_pathname):
     # —— PAGE 5 — Performance annuelle ——
     @app.callback(
         Output('adv-annual-graph', 'figure'),
-        Input('applied-filters', 'data'),
+        [Input('applied-filters', 'data'), Input('active-page', 'data')],
+        prevent_initial_call=True,
     )
-    def update_adv_annual(applied_filters):
+    def update_adv_annual(applied_filters, active_page):
+        if active_page != 'advanced':
+            return dash.no_update
         applied_filters = applied_filters or applied_default
         fd = _filter_df(applied_filters['start'], applied_filters['end'], applied_filters.get('site'))
         fd['Year'] = fd['Date'].dt.year

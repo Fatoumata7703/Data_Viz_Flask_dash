@@ -52,6 +52,8 @@ body {
     overflow-x: hidden;
 }
 
+/* Pas de .top-nav ici : la barre horizontale est celle du template pro.html (dashboard-nav), comme pour les autres dashboards. Style teal dans static/style.css (body.theme-pro). */
+
 /* Layout principal avec sidebar */
 .app-container {
     display: flex;
@@ -503,13 +505,25 @@ body {
     font-weight: 400;
 }
 
-/* Patient Stats Grid — blocs sur les mêmes lignes (2 lignes × 3) */
+/* Patient Stats Grid — tous les blocs sur une même ligne */
+/* Patient Stats Grid — tous les blocs sur une même ligne, texte contenu */
 .patient-stats-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    margin-bottom: 2rem;
+    grid-template-columns: repeat(6, minmax(90px, 1fr));
+    grid-auto-flow: column;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
 }
+.patient-stats-grid .patient-stat-card {
+    min-height: 72px;
+    min-width: 0;
+    padding: 0.6rem 0.75rem;
+}
+.patient-stats-grid .patient-stat-icon { width: 28px; height: 28px; }
+.patient-stats-grid .patient-stat-icon svg { width: 18px; height: 18px; }
+.patient-stats-grid .patient-stat-value { font-size: 1.5rem; font-weight: 800; }
+.patient-stats-grid .patient-stat-label { font-size: 0.6rem; line-height: 1.2; word-break: keep-all; }
 
 .patient-stat-icon svg {
     width: 22px;
@@ -518,24 +532,24 @@ body {
 
 .patient-stat-value {
     font-size: 1.5rem;
-    font-weight: 700;
+    font-weight: 800;
     color: #1a1f3a;
     margin: 0;
     line-height: 1.2;
     min-width: 0;
+    white-space: nowrap;
 }
 
 .patient-stat-label {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     color: #4b5563;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.02em;
     margin: 0;
-    line-height: 1.35;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
+    line-height: 1.25;
     max-width: 100%;
+    word-break: keep-all;
 }
 
 .page-content-wrapper {
@@ -597,16 +611,19 @@ body {
     line-height: 1.5;
 }
 
-/* Treatment Stats Grid — tout sur une seule ligne, blocs réduits */
+/* Treatment Stats Grid — tous les blocs sur une même ligne, texte contenu */
 .treatment-stats-grid {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(6, minmax(90px, 1fr));
+    grid-auto-flow: column;
     gap: 0.6rem;
     margin-bottom: 1.5rem;
+    overflow-x: auto;
 }
 
 .treatment-stats-grid .treatment-stat-card {
     min-height: 72px;
+    min-width: 0;
     padding: 0.6rem 0.75rem;
 }
 
@@ -621,11 +638,14 @@ body {
 }
 
 .treatment-stats-grid .treatment-stat-value {
-    font-size: 1.15rem;
+    font-size: 1.5rem;
+    font-weight: 800;
 }
 
 .treatment-stats-grid .treatment-stat-label {
-    font-size: 0.62rem;
+    font-size: 0.6rem;
+    line-height: 1.2;
+    word-break: keep-all;
 }
 
 .treatment-stat-icon svg {
@@ -635,33 +655,44 @@ body {
 
 .treatment-stat-value {
     font-size: 1.5rem;
-    font-weight: 700;
+    font-weight: 800;
     color: #1a1f3a;
     margin: 0;
     line-height: 1.2;
     min-width: 0;
+    white-space: nowrap;
 }
 
 .treatment-stat-label {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     color: #4b5563;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.02em;
     margin: 0;
-    line-height: 1.35;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
+    line-height: 1.25;
     max-width: 100%;
+    word-break: keep-all;
 }
 
-/* Risk Stats Grid — blocs sur les mêmes lignes (2 lignes × 3) */
+/* Risk Stats Grid — tous les blocs sur une même ligne, texte contenu */
 .risk-stats-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    margin-bottom: 2rem;
+    grid-template-columns: repeat(6, minmax(90px, 1fr));
+    grid-auto-flow: column;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
 }
+.risk-stats-grid .risk-stat-card {
+    min-height: 72px;
+    min-width: 0;
+    padding: 0.6rem 0.75rem;
+}
+.risk-stats-grid .risk-stat-icon { width: 28px; height: 28px; }
+.risk-stats-grid .risk-stat-icon svg { width: 18px; height: 18px; }
+.risk-stats-grid .risk-stat-value { font-size: 1.5rem; font-weight: 800; }
+.risk-stats-grid .risk-stat-label { font-size: 0.6rem; line-height: 1.2; word-break: keep-all; }
 
 .risk-stat-icon svg {
     width: 22px;
@@ -670,33 +701,44 @@ body {
 
 .risk-stat-value {
     font-size: 1.5rem;
-    font-weight: 700;
+    font-weight: 800;
     color: #1a1f3a;
     margin: 0;
     line-height: 1.2;
     min-width: 0;
+    white-space: nowrap;
 }
 
 .risk-stat-label {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     color: #4b5563;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.02em;
     margin: 0;
-    line-height: 1.35;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
+    line-height: 1.25;
     max-width: 100%;
+    word-break: keep-all;
 }
 
-/* Analytics Stats Grid — blocs sur les mêmes lignes (2 lignes × 3) */
+/* Analytics Stats Grid — tous les blocs sur une même ligne, texte contenu */
 .analytics-stats-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    margin-bottom: 2rem;
+    grid-template-columns: repeat(6, minmax(90px, 1fr));
+    grid-auto-flow: column;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
 }
+.analytics-stats-grid .analytics-stat-card {
+    min-height: 72px;
+    min-width: 0;
+    padding: 0.6rem 0.75rem;
+}
+.analytics-stats-grid .analytics-stat-icon { width: 28px; height: 28px; }
+.analytics-stats-grid .analytics-stat-icon svg { width: 18px; height: 18px; }
+.analytics-stats-grid .analytics-stat-value { font-size: 1.5rem; font-weight: 800; }
+.analytics-stats-grid .analytics-stat-label { font-size: 0.6rem; line-height: 1.2; word-break: keep-all; }
 
 .analytics-stat-icon svg {
     width: 22px;
@@ -705,33 +747,44 @@ body {
 
 .analytics-stat-value {
     font-size: 1.5rem;
-    font-weight: 700;
+    font-weight: 800;
     color: #1a1f3a;
     margin: 0;
     line-height: 1.2;
     min-width: 0;
+    white-space: nowrap;
 }
 
 .analytics-stat-label {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     color: #4b5563;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.02em;
     margin: 0;
-    line-height: 1.35;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
+    line-height: 1.25;
     max-width: 100%;
+    word-break: keep-all;
 }
 
-/* Organization Stats Grid — blocs sur les mêmes lignes (2 lignes × 2) */
+/* Organization Stats Grid — tous les blocs sur une ligne, tout le texte visible, chiffres imposants */
 .organization-stats-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-    margin-bottom: 2rem;
+    grid-template-columns: repeat(4, minmax(100px, 1fr));
+    grid-auto-flow: column;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
 }
+.organization-stats-grid .organization-stat-card {
+    min-height: 78px;
+    min-width: 0;
+    padding: 0.6rem 0.75rem;
+}
+.organization-stats-grid .organization-stat-icon { width: 28px; height: 28px; }
+.organization-stats-grid .organization-stat-icon svg { width: 18px; height: 18px; }
+.organization-stats-grid .organization-stat-value { font-size: 1.5rem; font-weight: 800; }
+.organization-stats-grid .organization-stat-label { font-size: 0.6rem; line-height: 1.2; word-break: keep-all; }
 
 .organization-stat-icon svg {
     width: 22px;
@@ -740,33 +793,44 @@ body {
 
 .organization-stat-value {
     font-size: 1.5rem;
-    font-weight: 700;
+    font-weight: 800;
     color: #1a1f3a;
     margin: 0;
     line-height: 1.2;
     min-width: 0;
+    white-space: nowrap;
 }
 
 .organization-stat-label {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     color: #4b5563;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.02em;
     margin: 0;
-    line-height: 1.35;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
+    line-height: 1.25;
     max-width: 100%;
+    word-break: keep-all;
 }
 
-/* Pathology Stats Grid — blocs sur les mêmes lignes (2 lignes × 2) */
+/* Pathology Stats Grid — tous les blocs sur une ligne, tout le texte visible, chiffres imposants */
 .pathology-stats-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-    margin-bottom: 2rem;
+    grid-template-columns: repeat(4, minmax(100px, 1fr));
+    grid-auto-flow: column;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
 }
+.pathology-stats-grid .pathology-stat-card {
+    min-height: 78px;
+    min-width: 0;
+    padding: 0.6rem 0.75rem;
+}
+.pathology-stats-grid .pathology-stat-icon { width: 28px; height: 28px; }
+.pathology-stats-grid .pathology-stat-icon svg { width: 18px; height: 18px; }
+.pathology-stats-grid .pathology-stat-value { font-size: 1.5rem; font-weight: 800; }
+.pathology-stats-grid .pathology-stat-label { font-size: 0.6rem; line-height: 1.2; word-break: keep-all; }
 
 .pathology-stat-icon svg {
     width: 22px;
@@ -775,30 +839,33 @@ body {
 
 .pathology-stat-value {
     font-size: 1.5rem;
-    font-weight: 700;
+    font-weight: 800;
     color: #1a1f3a;
     margin: 0;
     line-height: 1.2;
     min-width: 0;
+    white-space: nowrap;
 }
 
 .pathology-stat-label {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     color: #4b5563;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.02em;
     margin: 0;
-    line-height: 1.35;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
+    line-height: 1.25;
     max-width: 100%;
+    word-break: keep-all;
 }
 
-/* Responsive : blocs hospitaliers — treatment en 3 puis 2 puis 1 colonne */
+/* Responsive : blocs hospitaliers — toujours une seule ligne ; scroll horizontal si besoin */
 @media (max-width: 1200px) {
-    .treatment-stats-grid {
-        grid-template-columns: repeat(3, 1fr);
+    .patient-stats-grid,
+    .treatment-stats-grid,
+    .risk-stats-grid,
+    .analytics-stats-grid {
+        grid-template-columns: repeat(6, minmax(85px, 1fr));
     }
 }
 @media (max-width: 992px) {
@@ -806,7 +873,11 @@ body {
     .treatment-stats-grid,
     .risk-stats-grid,
     .analytics-stats-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(6, minmax(80px, 1fr));
+    }
+    .organization-stats-grid,
+    .pathology-stats-grid {
+        grid-template-columns: repeat(4, minmax(90px, 1fr));
     }
 }
 @media (max-width: 576px) {
@@ -814,11 +885,11 @@ body {
     .treatment-stats-grid,
     .risk-stats-grid,
     .analytics-stats-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(6, minmax(75px, 1fr));
     }
     .organization-stats-grid,
     .pathology-stats-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(4, minmax(80px, 1fr));
     }
 }
 
@@ -1017,15 +1088,33 @@ body {
     min-width: 0;
 }
 
-/* Zone texte des stat-cards : peut rétrécir et les libellés passent à la ligne */
-.patient-stat-card > div:not([class*="stat-icon"]),
-.treatment-stat-card > div:not([class*="stat-icon"]),
-.risk-stat-card > div:not([class*="stat-icon"]),
-.analytics-stat-card > div:not([class*="stat-icon"]),
-.organization-stat-card > div:not([class*="stat-icon"]),
-.pathology-stat-card > div:not([class*="stat-icon"]) {
+/* Bloc icône + chiffre sur une ligne, libellé en dessous */
+.stat-card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     min-width: 0;
-    overflow-wrap: break-word;
+    flex: 1;
+}
+/* Chiffre + symbole (€, j) sur la même ligne : pas de retour à la ligne, taille adaptée */
+.stat-card-body .patient-stat-value,
+.stat-card-body .treatment-stat-value,
+.stat-card-body .risk-stat-value,
+.stat-card-body .analytics-stat-value,
+.stat-card-body .organization-stat-value,
+.stat-card-body .pathology-stat-value {
+    margin-bottom: 0.15rem;
+    white-space: nowrap;
+    font-size: 1.35rem;
+}
+.stat-card-body .patient-stat-label,
+.stat-card-body .treatment-stat-label,
+.stat-card-body .risk-stat-label,
+.stat-card-body .analytics-stat-label,
+.stat-card-body .organization-stat-label,
+.stat-card-body .pathology-stat-label {
+    line-height: 1.2;
+    word-break: keep-all;
 }
 
 .kpi-card:hover,
@@ -1881,4 +1970,35 @@ body {
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
+}
+
+/* Override Bootstrap en production : garder le style local des filtres (priorité max) */
+body .filter-container .form-control,
+body .filter-container .form-control:focus,
+body .filter-container input,
+body .filter-container select,
+body .filter-container .form-select {
+    box-shadow: none !important;
+    border-color: var(--border-color) !important;
+    border-radius: 10px !important;
+    background: white !important;
+    color: var(--text-primary) !important;
+}
+body .filter-container .Select-control,
+body .filter-container [class*="Select"] {
+    box-shadow: none !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 10px !important;
+    background: white !important;
+}
+body .filter-container .Select-multi-value {
+    background-color: rgba(16, 185, 129, 0.12) !important;
+    border-radius: 8px !important;
+}
+body .filter-container .rc-slider-track {
+    background-color: var(--green-icon) !important;
+}
+body .filter-container .rc-slider-handle {
+    border-color: var(--green-icon) !important;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
 }

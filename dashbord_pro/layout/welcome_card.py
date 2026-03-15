@@ -1,7 +1,7 @@
 """Carte de bienvenue - Vert clair couleur hospitalière"""
 from dash import html, dcc
 from datetime import datetime
-from layout.icons import create_icon_svg
+from .icons import create_icon_svg
 
 def create_welcome_card(df):
     """Crée la carte de bienvenue avec les couleurs vertes hospitalières"""

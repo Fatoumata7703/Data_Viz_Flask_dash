@@ -1,7 +1,7 @@
 """Filtres interactifs avec design amélioré"""
 import dash_bootstrap_components as dbc
 from dash import html, dcc
-from layout.icons import create_icon_svg
+from .icons import create_icon_svg
 
 def create_filters(df):
     """Crée les filtres interactifs avec design moderne"""

@@ -3,8 +3,8 @@ from dash import Input, Output, State, callback_context
 import plotly.graph_objs as go
 import dash_bootstrap_components as dbc
 from dash import html
-from utils import filter_data, get_department_stats, format_number
-from callbacks.constants import COLORS
+from dashbord_pro.utils import filter_data, get_department_stats, format_number
+from .constants import COLORS
 
 def register_organization_callbacks(app, df):
     """Enregistre les callbacks pour l'organisation"""

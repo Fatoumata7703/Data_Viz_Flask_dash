@@ -1,10 +1,10 @@
-"""Layout principal avec sidebar"""
+"""Layout principal : sidebar + contenu. La barre horizontale (Accueil, Photovoltaïque...) est celle du template pro.html, comme pour les autres dashboards."""
 from dash import html, dcc
-from layout.sidebar import create_sidebar
-from layout.header_main import create_main_header
+from .sidebar import create_sidebar
+from .header_main import create_main_header
 
 def create_main_layout(df):
-    """Crée le layout principal avec sidebar"""
+    """Crée le layout : sidebar + contenu (pas de top-nav ici, même barre que dash1/dash2/bank via le template)."""
     return html.Div([
         dcc.Location(id='url', refresh=False),
         html.Div([

@@ -38,13 +38,13 @@ body {
     flex-direction: column;
 }
 
-/* Header Accueil — bandeau cool & classe (slate premium) */
+/* Header Accueil — bandeau compact & classe (slate premium) */
 .header {
     background: linear-gradient(165deg, #1e293b 0%, #172033 40%, #0f172a 100%);
-    padding: 2.5rem 1.5rem;
-    border-radius: 18px;
-    box-shadow: 0 4px 24px rgba(15, 23, 42, 0.45), 0 1px 0 rgba(255, 255, 255, 0.04) inset;
-    margin-bottom: 2.5rem;
+    padding: 1.25rem 1.5rem;
+    border-radius: 14px;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.4), 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+    margin-bottom: 1.75rem;
     text-align: center;
     border: 1px solid rgba(255, 255, 255, 0.08);
     position: relative;
@@ -55,9 +55,9 @@ body {
 }
 
 .logo {
-    font-size: 2.25rem;
+    font-size: 1.75rem;
     font-weight: 800;
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.2rem;
     letter-spacing: 0.02em;
 }
 
@@ -67,7 +67,7 @@ body {
 }
 
 .subtitle {
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     font-weight: 500;
     color: #94a3b8;
     letter-spacing: 0.03em;
@@ -207,11 +207,12 @@ body {
     overflow: hidden;
 }
 
-/* Navigation Dashboard */
+/* Navigation Dashboard — barre compacte, survol élégant */
 .dashboard-nav {
     background: linear-gradient(135deg, var(--orange-light) 0%, var(--orange-medium) 100%);
-    padding: 15px 20px;
-    box-shadow: 0 2px 10px var(--shadow);
+    padding: 10px 18px;
+    min-height: 48px;
+    box-shadow: 0 1px 8px var(--shadow);
     z-index: 1000;
 }
 
@@ -224,36 +225,41 @@ body {
 }
 
 .nav-logo {
-    font-size: 1.5em;
+    font-size: 1.2em;
     font-weight: bold;
     color: var(--white);
     text-decoration: none;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+    letter-spacing: 0.02em;
 }
 
 .nav-links {
     display: flex;
-    gap: 20px;
+    gap: 6px;
+    align-items: center;
 }
 
 .nav-link {
-    color: var(--white);
+    color: rgba(255, 255, 255, 0.95);
     text-decoration: none;
-    padding: 8px 20px;
-    border-radius: 20px;
-    transition: all 0.3s ease;
+    padding: 6px 14px;
+    border-radius: 18px;
+    transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
     font-weight: 500;
+    font-size: 0.875rem;
 }
 
 .nav-link:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .nav-link.active {
-    background: var(--white);
+    background: rgba(255, 255, 255, 0.98);
     color: var(--orange-dark);
-    font-weight: bold;
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
 /* Thèmes de la navbar selon le dashboard */
@@ -510,7 +516,7 @@ body.theme-about .nav-link.active {
     }
     
     .logo {
-        font-size: 2em;
+        font-size: 1.5rem;
     }
     
     .nav-content {
